@@ -1,0 +1,32 @@
+{
+  "name": "joi-to-swagger",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap tests.js",
+    "lint": "eslint ./"
+  },
+  "keywords": ["joi", "swagger", "schema", "api", "convert", "openapi"],
+  "author": "Jarvis Badgley <chiper@chipersoft.com> (http://chipersoft.com/)",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "~3.12.0",
+    "eslint-config-chiper": "~2.1.0",
+    "eslint-plugin-node": "~3.0.5",
+    "eslint-plugin-promise": "~3.4.0",
+    "joi": "~10.1.0",
+    "tap": "~8.0.1",
+    "tapsuite": "~1.1.0"
+  },
+  "peerDependencies": {
+    "joi": ">= 10"
+  },
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "lodash.find": "^4.0.0",
+    "lodash.get": "^4.0.2"
+  }
+}
