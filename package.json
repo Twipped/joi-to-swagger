@@ -1,13 +1,20 @@
 {
   "name": "joi-to-swagger",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "tap tests.js",
     "lint": "eslint ./"
   },
-  "keywords": ["joi", "swagger", "schema", "api", "convert", "openapi"],
+  "keywords": [
+    "joi",
+    "swagger",
+    "schema",
+    "api",
+    "convert",
+    "openapi"
+  ],
   "author": "Jarvis Badgley <chiper@chipersoft.com> (http://chipersoft.com/)",
   "license": "MIT",
   "devDependencies": {
