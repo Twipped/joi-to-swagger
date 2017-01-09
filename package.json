@@ -7,6 +7,9 @@
     "test": "tap tests.js",
     "lint": "eslint ./"
   },
+  "engines": {
+    "node": ">=4.2.0"
+  },
   "keywords": [
     "joi",
     "swagger",
