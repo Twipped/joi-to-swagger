@@ -15,6 +15,11 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 
 	if (!schema.isJoi) throw new TypeError('Passed schema does not appear to be a joi schema.');
 
+	var override = meta(schema, 'swagger');
+	if (override && meta(schema, 'swaggerOverride')) {
+		return { swagger: override, definitions: {} };
+	}
+
 	var metaDefName = meta(schema, 'className');
 
 	// if the schema has a definition class name, and that
@@ -50,7 +55,6 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 		return { swagger: refDef(metaDefName), definitions };
 	}
 
-	var override = meta(schema, 'swagger');
 	if (override) {
 		Object.assign(swagger, override);
 	}
