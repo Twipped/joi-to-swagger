@@ -242,20 +242,23 @@ var parseAsType = {
 		var properties = {};
 
 		var combinedDefinitions = Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {});
+	        
+		if (schema._inner.children !== null) {
+			schema._inner.children.forEach((child) => {
+				var key = child.key;
 
-		schema._inner.children.forEach((child) => {
-			var key = child.key;
-			var prop = exports(child.schema, combinedDefinitions);
+				var prop = exports(child.schema, combinedDefinitions);
 
-			Object.assign(newDefinitionsByRef, prop.definitions || {});
-			Object.assign(combinedDefinitions, prop.definitions || {});
+				Object.assign(newDefinitionsByRef, prop.definitions || {});
+				Object.assign(combinedDefinitions, prop.definitions || {});
 
-			properties[key] = prop.swagger;
+				properties[key] = prop.swagger;
 
-			if (get(child.schema, '_flags.presence') === 'required') {
-				requireds.push(key);
-			}
-		});
+				if (get(child.schema, '_flags.presence') === 'required') {
+					requireds.push(key);
+				}
+			});
+		}
 
 		var swagger = { type: 'object' };
 		if (requireds.length) {
