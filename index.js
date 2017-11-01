@@ -194,7 +194,19 @@ var parseAsType = {
 	boolean: () => ({ type: 'boolean' }),
 	alternatives: (schema, existingDefinitions, newDefinitionsByRef) => {
 		var index = meta(schema, 'swaggerIndex') || 0;
-		var itemsSchema = get(schema, [ '_inner', 'matches', index, 'schema' ]);
+
+		var matches = get(schema, [ '_inner', 'matches' ]);
+		var firstItem = get(matches, [ 0 ]);
+
+		var itemsSchema;
+		if (firstItem.ref) {
+			itemsSchema = index ? firstItem.otherwise : firstItem.then;
+		} else if (index) {
+			itemsSchema = get(matches, [ index, 'schema' ]);
+		} else {
+			itemsSchema = firstItem.schema;
+		}
+
 		var items = exports(itemsSchema, Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {}));
 
 		Object.assign(newDefinitionsByRef, items.definitions || {});
