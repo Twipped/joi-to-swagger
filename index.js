@@ -255,7 +255,8 @@ var parseAsType = {
 
 		var combinedDefinitions = Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {});
 
-		schema._inner.children.forEach((child) => {
+		var children = get(schema, '_inner.children') || [];
+		children.forEach((child) => {
 			var key = child.key;
 			var prop = exports(child.schema, combinedDefinitions);
 
@@ -264,7 +265,7 @@ var parseAsType = {
 
 			properties[key] = prop.swagger;
 
-			if (get(child.schema, '_flags.presence') === 'required') {
+			if (get(child, 'schema._flags.presence') === 'required') {
 				requireds.push(key);
 			}
 		});
