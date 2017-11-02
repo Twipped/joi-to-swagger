@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "tap tests.js",
+    "test:travis": "tap --reporter=tap tests.js",
     "lint": "eslint ./"
   },
   "engines": {
