@@ -203,6 +203,24 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		joi.when('myRequiredField', {
+			is: true,
+			then: joi.string(),
+			otherwise: joi.number(),
+		}),
+		{ type: 'string' }
+	);
+
+	simpleTest(
+		joi.when('myRequiredField', {
+			is: true,
+			then: joi.string(),
+			otherwise: joi.number(),
+		}).meta({ swaggerIndex: 1 }),
+		{ type: 'number', format: 'float' }
+	);
+
+	simpleTest(
 		joi.object().keys({
 			id: joi.number().integer().required(),
 			name: joi.string(),
