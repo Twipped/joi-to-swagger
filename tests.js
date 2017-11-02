@@ -237,6 +237,20 @@ suite('swagger converts', (s) => {
 
 	simpleTest(
 		joi.object().keys({
+			name: joi.string(),
+			settings: joi.object(),
+		}),
+		{
+			type: 'object',
+			properties: {
+				name: { type: 'string' },
+				settings: { type: 'object', properties: {} },
+			},
+		}
+	);
+
+	simpleTest(
+		joi.object().keys({
 			value: joi.string().default('hello'),
 		}).unknown(false),
 		{
