@@ -19,7 +19,11 @@
     "convert",
     "openapi"
   ],
-  "author": "Jarvis Badgley <chiper@chipersoft.com> (http://chipersoft.com/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Twipped/joi-to-swagger.git"
+  },
+  "author": "Jocelyn Badgley <joc@twipped.com>",
   "license": "MIT",
   "devDependencies": {
     "eslint": "~3.12.0",
