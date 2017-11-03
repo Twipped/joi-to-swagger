@@ -1,6 +1,8 @@
 joi-to-swagger
 ==============
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Twipped/joi-to-swagger.svg)](https://greenkeeper.io/)
+
 Conversion library for transforming [Joi](http://npm.im/joi) schema objects into [Swagger](http://swagger.io) schema definitions.
 
 ```js
