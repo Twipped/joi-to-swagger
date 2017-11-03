@@ -32,7 +32,7 @@
     "eslint-plugin-promise": "~3.6.0",
     "joi": "~13.0.1",
     "tap": "~10.7.2",
-    "tapsuite": "~1.1.0"
+    "tapsuite": "~1.1.1"
   },
   "peerDependencies": {
     "joi": ">= 10"
