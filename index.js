@@ -100,6 +100,10 @@ var parseAsType = {
 			swagger.enum = valids;
 		}
 
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+
 		return swagger;
 	},
 	string: (schema) => {
@@ -163,6 +167,9 @@ var parseAsType = {
 			swagger.enum = valids;
 		}
 
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
 		return swagger;
 	},
 	binary: (schema) => {
@@ -188,10 +195,26 @@ var parseAsType = {
 			}
 		}
 
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+
 		return swagger;
 	},
-	date: () => ({ type: 'string', format: 'date-time' }),
-	boolean: () => ({ type: 'boolean' }),
+	date: (schema) => { 
+
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+		return { type: 'string', format: 'date-time' }
+	},
+	boolean: (schema) => { 
+
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+		return { type: 'boolean' }
+	},
 	alternatives: (schema, existingDefinitions, newDefinitionsByRef) => {
 		var index = meta(schema, 'swaggerIndex') || 0;
 
@@ -219,10 +242,15 @@ var parseAsType = {
 
 		if (!itemsSchema) throw Error('Array schema does not define an items schema at index ' + index);
 
+		if (get(itemsSchema, '_flags.presence') === 'forbidden') {
+			return;
+		}
+
 		var items = exports(itemsSchema, Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {}));
 
 		Object.assign(newDefinitionsByRef, items.definitions || {});
 
+		var requireds = [];
 		var swagger = { type: 'array' };
 
 		for (let i = 0; i < schema._tests.length; i++) {
@@ -259,7 +287,9 @@ var parseAsType = {
 		children.forEach((child) => {
 			var key = child.key;
 			var prop = exports(child.schema, combinedDefinitions);
-
+			if(!prop.swagger){
+				return; // swagger is falsy if joi.forbidden()
+			}
 			Object.assign(newDefinitionsByRef, prop.definitions || {});
 			Object.assign(combinedDefinitions, prop.definitions || {});
 
