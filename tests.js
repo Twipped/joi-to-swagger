@@ -220,6 +220,25 @@ suite('swagger converts', (s) => {
 		{ type: 'number', format: 'float' }
 	);
 
+
+	simpleTest(
+		joi.object({
+			req: joi.string().required(),
+			forbiddenString: joi.string().forbidden(),
+			forbiddenNumber: joi.number().forbidden(),
+			forbiddenBoolean: joi.boolean().forbidden(),
+			forbiddenBinary: joi.binary().forbidden(),
+			maybeRequiredOrForbidden: joi.number().when('someField', {
+				is: true,
+				then: joi.required(),
+				otherwise: joi.forbidden(),
+			})
+				.meta({ swaggerIndex: 1 }),
+		}),
+		{ type: 'object', required: [ 'req' ], properties: { req: { type: 'string' } } }
+	);
+
+
 	simpleTest(
 		joi.object().keys({
 			id: joi.number().integer().required(),
