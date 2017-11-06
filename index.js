@@ -59,6 +59,10 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 		Object.assign(swagger, override);
 	}
 
+	if (get(schema, '_flags.presence') === 'forbidden') {
+		return false;
+	}
+
 	return { swagger, definitions };
 };
 
@@ -104,6 +108,10 @@ var parseAsType = {
 	},
 	string: (schema) => {
 		var swagger = { type: 'string' };
+
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
 
 		var strict = get(schema, '_settings.convert') === false;
 
@@ -168,6 +176,10 @@ var parseAsType = {
 	binary: (schema) => {
 		var swagger = { type: 'string', format: 'binary' };
 
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+
 		if (get(schema, '_flags.encoding') === 'base64') {
 			swagger.format = 'byte';
 		}
@@ -190,8 +202,20 @@ var parseAsType = {
 
 		return swagger;
 	},
-	date: () => ({ type: 'string', format: 'date-time' }),
-	boolean: () => ({ type: 'boolean' }),
+	date: (schema) => {
+
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+		return { type: 'string', format: 'date-time' };
+	},
+	boolean: (schema) => {
+
+		if (get(schema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
+		return { type: 'boolean' };
+	},
 	alternatives: (schema, existingDefinitions, newDefinitionsByRef) => {
 		var index = meta(schema, 'swaggerIndex') || 0;
 
@@ -208,6 +232,9 @@ var parseAsType = {
 		}
 
 		var items = exports(itemsSchema, Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {}));
+		if (get(itemsSchema, '_flags.presence') === 'required') {
+			items.swagger.__required = true;
+		}
 
 		Object.assign(newDefinitionsByRef, items.definitions || {});
 
@@ -218,6 +245,10 @@ var parseAsType = {
 		var itemsSchema = get(schema, [ '_inner', 'items', index ]);
 
 		if (!itemsSchema) throw Error('Array schema does not define an items schema at index ' + index);
+
+		if (get(itemsSchema, '_flags.presence') === 'forbidden') {
+			return false;
+		}
 
 		var items = exports(itemsSchema, Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {}));
 
@@ -259,14 +290,18 @@ var parseAsType = {
 		children.forEach((child) => {
 			var key = child.key;
 			var prop = exports(child.schema, combinedDefinitions);
+			if (!prop.swagger) { // swagger is falsy if joi.forbidden()
+				return;
+			}
 
 			Object.assign(newDefinitionsByRef, prop.definitions || {});
 			Object.assign(combinedDefinitions, prop.definitions || {});
 
 			properties[key] = prop.swagger;
 
-			if (get(child, 'schema._flags.presence') === 'required') {
+			if (get(child, 'schema._flags.presence') === 'required' || prop.swagger.__required) {
 				requireds.push(key);
+				delete prop.swagger.__required;
 			}
 		});
 
@@ -296,5 +331,5 @@ function refDef (name) {
 
 // var inspectU = require('util').inspect;
 // function inspect (value) {
-// 	console.error(inspectU(value, { colors: true, depth: 10 }));
+// 		console.error(inspectU(value, { colors: true, depth: 10 }));
 // }
