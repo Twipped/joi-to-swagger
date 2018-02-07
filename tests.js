@@ -52,7 +52,7 @@ suite('swagger converts', (s) => {
 		joi.string().regex(/^A$/),
 		{
 			type: 'string',
-			pattern: '/^A$/',
+			pattern: '^A$',
 		}
 	);
 
@@ -87,7 +87,7 @@ suite('swagger converts', (s) => {
 		joi.string().alphanum(),
 		{
 			type: 'string',
-			pattern: '/^[a-zA-Z0-9]*$/',
+			pattern: '^[a-zA-Z0-9]*$',
 		}
 	);
 
@@ -95,7 +95,7 @@ suite('swagger converts', (s) => {
 		joi.string().strict().alphanum().lowercase(),
 		{
 			type: 'string',
-			pattern: '/^[a-z0-9]*$/',
+			pattern: '^[a-z0-9]*$',
 		}
 	);
 
@@ -104,7 +104,7 @@ suite('swagger converts', (s) => {
 		joi.string().alphanum().uppercase(),
 		{
 			type: 'string',
-			pattern: '/^[a-zA-Z0-9]*$/',
+			pattern: '^[a-zA-Z0-9]*$',
 		}
 	);
 
@@ -112,7 +112,7 @@ suite('swagger converts', (s) => {
 		joi.string().strict().alphanum().uppercase(),
 		{
 			type: 'string',
-			pattern: '/^[A-Z0-9]*$/',
+			pattern: '^[A-Z0-9]*$',
 		}
 	);
 

@@ -4,6 +4,12 @@ var joi = require('joi');
 var find = require('lodash.find');
 var get = require('lodash.get');
 
+var patterns = {
+	alphanum: '^[a-zA-Z0-9]*$',
+	alphanumLower: '^[a-z0-9]*$',
+	alphanumUpper: '^[A-Z0-9]*$'
+}
+
 module.exports = exports = function parse (schema, existingDefinitions) {
 	// inspect(schema);
 
@@ -117,21 +123,21 @@ var parseAsType = {
 
 		if (find(schema._tests, { name: 'alphanum' })) {
 			if (strict && find(schema._tests, { name: 'lowercase' })) {
-				swagger.pattern = '/^[a-z0-9]*$/';
+				swagger.pattern = patterns.alphanumLower;
 			} else if (strict && find(schema._tests, { name: 'uppercase' })) {
-				swagger.pattern = '/^[A-Z0-9]*$/';
+				swagger.pattern = patterns.alphanumUpper;
 			} else {
-				swagger.pattern = '/^[a-zA-Z0-9]*$/';
+				swagger.pattern = patterns.alphanum;
 			}
 		}
 
 		if (find(schema._tests, { name: 'token' })) {
 			if (find(schema._tests, { name: 'lowercase' })) {
-				swagger.pattern = '/^[a-z0-9_]*$/';
+				swagger.pattern = patterns.alphanumLower;
 			} else if (find(schema._tests, { name: 'uppercase' })) {
-				swagger.pattern = '/^[A-Z0-9_]*$/';
+				swagger.pattern = patterns.alphanumUpper;
 			} else {
-				swagger.pattern = '/^[a-zA-Z0-9_]*$/';
+				swagger.pattern = patterns.alphanum;
 			}
 		}
 
@@ -147,7 +153,7 @@ var parseAsType = {
 
 		var pattern = find(schema._tests, { name: 'regex' });
 		if (pattern) {
-			swagger.pattern = pattern.arg.pattern.toString();
+			swagger.pattern = pattern.arg.pattern.toString().slice(1, -1);
 		}
 
 		for (let i = 0; i < schema._tests.length; i++) {
