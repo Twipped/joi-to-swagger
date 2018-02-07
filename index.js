@@ -7,8 +7,8 @@ var get = require('lodash.get');
 var patterns = {
 	alphanum: '^[a-zA-Z0-9]*$',
 	alphanumLower: '^[a-z0-9]*$',
-	alphanumUpper: '^[A-Z0-9]*$'
-}
+	alphanumUpper: '^[A-Z0-9]*$',
+};
 
 module.exports = exports = function parse (schema, existingDefinitions) {
 	// inspect(schema);
