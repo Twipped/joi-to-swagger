@@ -286,7 +286,7 @@ suite('swagger converts', (s) => {
 	simpleTest(
 		joi.string().alphanum().email().meta({ className: 'Email' }),
 		{
-			$ref: '#/definitions/Email',
+			$ref: '#/components/schemas/Email',
 		},
 		{
 			Email: {
@@ -310,8 +310,8 @@ suite('swagger converts', (s) => {
 		{
 			type: 'object',
 			properties: {
-				start: { $ref: '#/definitions/GeoPoint' },
-				stop: { $ref: '#/definitions/GeoPoint' },
+				start: { $ref: '#/components/schemas/GeoPoint' },
+				stop: { $ref: '#/components/schemas/GeoPoint' },
 			},
 		},
 		{
