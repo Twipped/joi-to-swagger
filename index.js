@@ -332,7 +332,7 @@ function meta (schema, key) {
 }
 
 function refDef (name) {
-	return { $ref: '#/definitions/' + name };
+	return { $ref: '#/components/schemas/' + name };
 }
 
 // var inspectU = require('util').inspect;
