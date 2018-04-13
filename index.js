@@ -44,7 +44,7 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 	}
 
 	if (schema._valids && schema._valids.has(null)) {
-		swagger.type = [ swagger.type, 'null' ];
+		swagger.nullable = true;
 	}
 
 	if (schema._description) {
