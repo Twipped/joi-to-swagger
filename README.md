@@ -34,10 +34,8 @@ joi.object().keys({
       "format": "email"
     },
     "created": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
+      "nullable": true,
       "format": "date-time"
     },
     "active": {
@@ -74,7 +72,7 @@ J2S returns a result object containing `swagger` and `definitions` properties. `
   - `.precision()` -> `"format": "double"`
   - `.integer()` -> `"type": "integer"`
   - `.strict().only(1, 2, '3')` -> `"enum": [1, 2]` (note that non-numbers are omitted due to swagger type constraints)
-  - `.allow(null)` -> `"type": ["number", "null"]`
+  - `.allow(null)` -> `"nullable": true`
   - `.min(5)` -> `"minimum": 5`
   - `.max(10)` -> `"maximum": 10`
   - `.positive()` -> `"minimum": 1`
@@ -91,7 +89,7 @@ J2S returns a result object containing `swagger` and `definitions` properties. `
   - `.email()` -> `"format": "email"`
   - `.isoDate()` -> `"format": "date-time"`
   - `.regex(/foo/)` -> `"pattern": "/foo/"`
-  - `.allow(null)` -> `"type": ["string", "null"]`
+  - `.allow(null)` -> `"nullable": true`
   - `.min(5)` -> `"minLength": 5`
   - `.max(10)` -> `"maxLength": 10`
 
@@ -99,10 +97,10 @@ J2S returns a result object containing `swagger` and `definitions` properties. `
   - `.encoding('base64')` -> `"format": "byte"`
   - `.min(5)` -> `"minLength": 5`
   - `.max(10)` -> `"maxLength": 10`
-  - `.allow(null)` -> `"type": ["string", "null"]`
+  - `.allow(null)` -> `"nullable": true`
 
 - `joi.date()` produces `"type": "string"` with a format of `"date-time"`.
-  - `.allow(null)` -> `"type": ["string", "null"]`
+  - `.allow(null)` -> `"nullable": true`
 
 - `joi.alternatives()` defines the structure using the first schema provided on `.items()` (see below for how to override)
 
