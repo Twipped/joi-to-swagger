@@ -30,7 +30,7 @@
     "eslint-config-chiper": "~2.2.0",
     "eslint-plugin-node": "~6.0.0",
     "eslint-plugin-promise": "~3.6.0",
-    "joi": "~12.0.0",
+    "joi": "~13.1.3",
     "tap": "~11.0.0",
     "tapsuite": "~1.1.1"
   },
