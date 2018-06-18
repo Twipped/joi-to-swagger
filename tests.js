@@ -49,6 +49,14 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		joi.string().label('test'),
+		{
+			type: 'string',
+			title: 'test',
+		}
+	);
+
+	simpleTest(
 		joi.string().regex(/^A$/),
 		{
 			type: 'string',
