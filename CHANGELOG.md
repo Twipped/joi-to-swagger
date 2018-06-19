@@ -1,4 +1,10 @@
 
+3.0.0 / 2018-06-19
+==================
+
+  * BREAKING CHANGE: Now only supports node 8.9+ and Joi 13.x
+  * BREAKING CHANGE: J2S now outputs a `components` property instead of `definitions`. This contains sub-properties for schemas, properties, etc. By default, any component defined with a `className` meta value will be put into `schemas`. This can be overridden with the `classTarget` meta value.
+
 2.1.0 / 2018-06-19
 ==================
 

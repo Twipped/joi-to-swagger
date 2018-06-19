@@ -50,12 +50,12 @@ joi.object().keys({
 ```js
 var j2s = require('joi-to-swagger');
 
-var {swagger, definitions} = j2s(mySchema, existingDefinitions);
+var {swagger, components} = j2s(mySchema, existingComponents);
 ```
 
-J2S takes two arguments, the first being the Joi object you wish to convert. The second optional argument is a collection of existing definitions to reference against for the meta `className` identifiers (see below).
+J2S takes two arguments, the first being the Joi object you wish to convert. The second optional argument is a collection of existing components to reference against for the meta `className` identifiers (see below).
 
-J2S returns a result object containing `swagger` and `definitions` properties. `swagger` contains your new schema, `definitions` contains any definitions that were generated while parsing your schema.
+J2S returns a result object containing `swagger` and `components` properties. `swagger` contains your new schema, `components` contains any components that were generated while parsing your schema.
 
 ## Supported Conventions:
 
@@ -110,10 +110,12 @@ J2S returns a result object containing `swagger` and `definitions` properties. `
 
 The following may be provided on a joi `.meta()` object to explicitly override default joi-to-schema behavior.
 
-**className**: By default J2S will be full verbose in its definitions. If an object has a `className` string, J2S will look for an existing definition with that name, and if a definition does not exist then it will create one. Either way, it will produce a `$ref` element for that schema definition. If a new definition is created it will be returned with the swagger schema.
+**className**: By default J2S will be full verbose in its components. If an object has a `className` string, J2S will look for an existing schema component with that name, and if a component does not exist then it will create one. Either way, it will produce a `$ref` element for that schema component. If a new component is created it will be returned with the swagger schema.
 
-**swaggerIndex**: Swagger's deterministic design disallows for supporting multiple type definitions. Because of this, only a single schema from `.alternatives()` and `.array().items()` may be converted to swagger. By default J2S will use the first definition. Defining a different zero based index for this meta tag will override that behavior.
+**classTarget**: Named components are assumed to be schemas, and are referenced as `components/schemas/ComponentName`. If a `classTarget` meta value is provided (such as `parameters`), this will replace schemas in the reference.
 
-**swagger**: To explicitly define your own swagger definition for a joi schema object, place that swagger object in the `swagger` meta tag. It will be mixed in to the schema that J2S produces.
+**swaggerIndex**: Swagger's deterministic design disallows for supporting multiple type components. Because of this, only a single schema from `.alternatives()` and `.array().items()` may be converted to swagger. By default J2S will use the first component. Defining a different zero based index for this meta tag will override that behavior.
 
-**swaggerOverride**: If this meta tag is truthy, the `swagger` definition will replace the result for that schema instead of mixing in to it.
+**swagger**: To explicitly define your own swagger component for a joi schema object, place that swagger object in the `swagger` meta tag. It will be mixed in to the schema that J2S produces.
+
+**swaggerOverride**: If this meta tag is truthy, the `swagger` component will replace the result for that schema instead of mixing in to it.
