@@ -33,7 +33,7 @@ module.exports = exports = function parse (schema, existingComponents) {
 
 	// if the schema has a definition class name, and that
 	// definition is already defined, just use that definition
-	if (metaDefName && get(existingComponents, [metaDefType, metaDefName])) {
+	if (metaDefName && get(existingComponents, [ metaDefType, metaDefName ])) {
 		return { swagger: refDef(metaDefType, metaDefName) };
 	}
 
@@ -65,7 +65,7 @@ module.exports = exports = function parse (schema, existingComponents) {
 	}
 
 	if (metaDefName) {
-		set(components, [metaDefType, metaDefName], swagger);
+		set(components, [ metaDefType, metaDefName ], swagger);
 		return { swagger: refDef(metaDefType, metaDefName), components };
 	}
 
