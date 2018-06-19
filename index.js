@@ -3,6 +3,8 @@
 var joi = require('joi');
 var find = require('lodash.find');
 var get = require('lodash.get');
+var set = require('lodash.set');
+var merge = require('lodash.merge');
 
 var patterns = {
 	alphanum: '^[a-zA-Z0-9]*$',
@@ -10,7 +12,7 @@ var patterns = {
 	alphanumUpper: '^[A-Z0-9]*$',
 };
 
-module.exports = exports = function parse (schema, existingDefinitions) {
+module.exports = exports = function parse (schema, existingComponents) {
 	// inspect(schema);
 
 	if (!schema) throw new Error('No schema was passed.');
@@ -23,22 +25,23 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 
 	var override = meta(schema, 'swagger');
 	if (override && meta(schema, 'swaggerOverride')) {
-		return { swagger: override, definitions: {} };
+		return { swagger: override, components: {} };
 	}
 
 	var metaDefName = meta(schema, 'className');
+	var metaDefType = meta(schema, 'classTarget') || 'schemas';
 
 	// if the schema has a definition class name, and that
 	// definition is already defined, just use that definition
-	if (metaDefName && existingDefinitions && existingDefinitions[metaDefName]) {
-		return { swagger: refDef(metaDefName) };
+	if (metaDefName && get(existingComponents, [metaDefType, metaDefName])) {
+		return { swagger: refDef(metaDefType, metaDefName) };
 	}
 
 	var swagger;
-	var definitions = {};
+	var components = {};
 
 	if (parseAsType[schema._type]) {
-		swagger = parseAsType[schema._type](schema, existingDefinitions, definitions);
+		swagger = parseAsType[schema._type](schema, existingComponents, components);
 	} else {
 		throw new TypeError(`${schema._type} is not a recognized Joi type.`);
 	}
@@ -62,8 +65,8 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 	}
 
 	if (metaDefName) {
-		definitions[metaDefName] = swagger;
-		return { swagger: refDef(metaDefName), definitions };
+		set(components, [metaDefType, metaDefName], swagger);
+		return { swagger: refDef(metaDefType, metaDefName), components };
 	}
 
 	if (override) {
@@ -74,7 +77,7 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 		return false;
 	}
 
-	return { swagger, definitions };
+	return { swagger, components };
 };
 
 var parseAsType = {
@@ -227,7 +230,7 @@ var parseAsType = {
 		}
 		return { type: 'boolean' };
 	},
-	alternatives: (schema, existingDefinitions, newDefinitionsByRef) => {
+	alternatives: (schema, existingComponents, newComponentsByRef) => {
 		var index = meta(schema, 'swaggerIndex') || 0;
 
 		var matches = get(schema, [ '_inner', 'matches' ]);
@@ -242,16 +245,16 @@ var parseAsType = {
 			itemsSchema = firstItem.schema;
 		}
 
-		var items = exports(itemsSchema, Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {}));
+		var items = exports(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 		if (get(itemsSchema, '_flags.presence') === 'required') {
 			items.swagger.__required = true;
 		}
 
-		Object.assign(newDefinitionsByRef, items.definitions || {});
+		merge(newComponentsByRef, items.components || {});
 
 		return items.swagger;
 	},
-	array: (schema, existingDefinitions, newDefinitionsByRef) => {
+	array: (schema, existingComponents, newComponentsByRef) => {
 		var index = meta(schema, 'swaggerIndex') || 0;
 		var itemsSchema = get(schema, [ '_inner', 'items', index ]);
 
@@ -261,9 +264,9 @@ var parseAsType = {
 			return false;
 		}
 
-		var items = exports(itemsSchema, Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {}));
+		var items = exports(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 
-		Object.assign(newDefinitionsByRef, items.definitions || {});
+		merge(newComponentsByRef, items.components || {});
 
 		var swagger = { type: 'array' };
 
@@ -290,23 +293,23 @@ var parseAsType = {
 		swagger.items = items.swagger;
 		return swagger;
 	},
-	object: (schema, existingDefinitions, newDefinitionsByRef) => {
+	object: (schema, existingComponents, newComponentsByRef) => {
 
 		var requireds = [];
 		var properties = {};
 
-		var combinedDefinitions = Object.assign({}, existingDefinitions || {}, newDefinitionsByRef || {});
+		var combinedComponents = merge({}, existingComponents || {}, newComponentsByRef || {});
 
 		var children = get(schema, '_inner.children') || [];
 		children.forEach((child) => {
 			var key = child.key;
-			var prop = exports(child.schema, combinedDefinitions);
+			var prop = exports(child.schema, combinedComponents);
 			if (!prop.swagger) { // swagger is falsy if joi.forbidden()
 				return;
 			}
 
-			Object.assign(newDefinitionsByRef, prop.definitions || {});
-			Object.assign(combinedDefinitions, prop.definitions || {});
+			merge(newComponentsByRef, prop.components || {});
+			merge(combinedComponents, prop.components || {});
 
 			properties[key] = prop.swagger;
 
@@ -336,8 +339,8 @@ function meta (schema, key) {
 	return get(flattened, key);
 }
 
-function refDef (name) {
-	return { $ref: '#/components/schemas/' + name };
+function refDef (type, name) {
+	return { $ref: '#/components/' + type + '/' + name };
 }
 
 // var inspectU = require('util').inspect;

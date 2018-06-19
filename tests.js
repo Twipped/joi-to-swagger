@@ -5,11 +5,11 @@ var joi = require('joi');
 
 suite('swagger converts', (s) => {
 	var i = 0;
-	function simpleTest (input, output, definitions, only) {
+	function simpleTest (input, output, components, only) {
 		s[only ? 'only' : 'test']('Set ' + i++, (t) => {
 			var result = parser(input);
 			t.deepEqual(result.swagger, output, 'swagger matches');
-			if (definitions) t.deepEqual(result.definitions, definitions, 'definitions match');
+			if (components) t.deepEqual(result.components, components, 'components match');
 			t.end();
 		});
 	}
@@ -297,9 +297,11 @@ suite('swagger converts', (s) => {
 			$ref: '#/components/schemas/Email',
 		},
 		{
-			Email: {
-				type: 'string',
-				format: 'email',
+			schemas: {
+				Email: {
+					type: 'string',
+					format: 'email',
+				},
 			},
 		}
 	);
@@ -323,22 +325,57 @@ suite('swagger converts', (s) => {
 			},
 		},
 		{
-			GeoPoint: {
-				type: 'object',
-				required: [ 'lat', 'lon' ],
-				additionalProperties: false,
-				properties: {
-					lat: {
-						type: 'number',
-						format: 'float',
-						minimum: -90,
-						maximum: 90,
+			schemas: {
+				GeoPoint: {
+					type: 'object',
+					required: [ 'lat', 'lon' ],
+					additionalProperties: false,
+					properties: {
+						lat: {
+							type: 'number',
+							format: 'float',
+							minimum: -90,
+							maximum: 90,
+						},
+						lon: {
+							type: 'number',
+							format: 'float',
+							minimum: -180,
+							maximum: 180,
+						},
 					},
-					lon: {
-						type: 'number',
-						format: 'float',
-						minimum: -180,
-						maximum: 180,
+				},
+			},
+		}
+	);
+
+	simpleTest(
+		{
+			body: joi.object().keys({
+				subject: joi.string(),
+				message: joi.string().trim().min(1, 'utf8').max(400, 'utf8').meta({ className: 'MessageBody' }),
+			}).meta({ className: 'MessageCreate', classTarget: 'requestBodies' }),
+		},
+		{
+			type: 'object',
+			properties: {
+				body: { '$ref': '#/components/requestBodies/MessageCreate' },
+			},
+		},
+		{
+			schemas: {
+				'MessageBody': {
+					maxLength: 400,
+					minLength: 1,
+					type: 'string',
+				},
+			},
+			requestBodies: {
+				'MessageCreate': {
+					type: 'object',
+					properties: {
+						message: { '$ref': '#/components/schemas/MessageBody' },
+						subject: { 'type': 'string' },
 					},
 				},
 			},
