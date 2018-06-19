@@ -9,7 +9,7 @@
     "lint": "eslint ./"
   },
   "engines": {
-    "node": ">=4.2.0"
+    "node": ">=8.9.0"
   },
   "keywords": [
     "joi",
@@ -30,12 +30,12 @@
     "eslint-config-chiper": "~2.2.0",
     "eslint-plugin-node": "~6.0.0",
     "eslint-plugin-promise": "~3.8.0",
-    "joi": "~12.0.0",
+    "joi": "~13.0.0",
     "tap": "~12.0.1",
     "tapsuite": "~1.1.1"
   },
   "peerDependencies": {
-    "joi": ">= 10"
+    "joi": ">= 13"
   },
   "files": [
     "index.js"
