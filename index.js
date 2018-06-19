@@ -51,6 +51,11 @@ module.exports = exports = function parse (schema, existingDefinitions) {
 		swagger.description = schema._description;
 	}
 
+	var label = get(schema, '_flags.label');
+	if (label) {
+		swagger.title = label;
+	}
+
 	var defaultValue = get(schema, '_flags.default');
 	if (defaultValue) {
 		swagger.default = defaultValue;
