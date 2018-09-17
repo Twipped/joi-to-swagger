@@ -104,7 +104,10 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 
 - `joi.alternatives()` defines the structure using the first schema provided on `.items()` (see below for how to override)
 
-- `any.default()` sets the `"default"` detail.
+- `joi.any()`
+  - `.default(5)` -> `"default": 5`
+  - `.example('hi')` -> `"example": "hi"`
+  - `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
 
 ## Meta Overrides
 

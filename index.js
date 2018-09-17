@@ -54,6 +54,14 @@ module.exports = exports = function parse (schema, existingComponents) {
 		swagger.description = schema._description;
 	}
 
+	if (schema._examples.length) {
+		if (schema._examples.length === 1) {
+			swagger.example = schema._examples[0];
+		} else {
+			swagger.examples = schema._examples;
+		}
+	}
+
 	var label = get(schema, '_flags.label');
 	if (label) {
 		swagger.title = label;

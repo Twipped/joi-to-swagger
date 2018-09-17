@@ -307,6 +307,25 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		joi.string().example('sii'),
+		{
+			example: 'sii',
+			type: 'string',
+		}
+	);
+
+	simpleTest(
+		joi.string().example('sel').example('wyn'),
+		{
+			examples: [
+				'sel',
+				'wyn',
+			],
+			type: 'string',
+		}
+	);
+
+	simpleTest(
 		{
 			start: joi.object().unknown(false).keys({
 				lat:  joi.number().min(-90).max(90).required(),
