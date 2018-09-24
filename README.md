@@ -106,6 +106,10 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 
 - `any.default()` sets the `"default"` detail.
 
+- `any.example()` sets the `"example"` or `"examples"`.
+  - `.example('hi')` -> `"example": "hi"`
+  - `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
+
 ## Meta Overrides
 
 The following may be provided on a joi `.meta()` object to explicitly override default joi-to-schema behavior.
