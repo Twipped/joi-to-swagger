@@ -400,4 +400,29 @@ suite('swagger converts', (s) => {
 			},
 		}
 	);
+
+	simpleTest(
+		{
+			id: joi.string()
+				.when('version', { is: joi.number().greater(0).required(), then: joi.string().required() }),
+		},
+		{
+			type: 'object',
+			properties: {
+				id: { type: 'string' },
+			},
+		}
+	);
+
+	simpleTest(
+		{
+			id: joi.string()
+				.description('user id')
+				.forbidden(),
+		},
+		{
+			type: 'object',
+			properties: {},
+		}
+	);
 });

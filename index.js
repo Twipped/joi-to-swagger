@@ -46,6 +46,8 @@ module.exports = exports = function parse (schema, existingComponents) {
 		throw new TypeError(`${schema._type} is not a recognized Joi type.`);
 	}
 
+	if (!swagger) return { swagger, components };
+
 	if (schema._valids && schema._valids.has(null)) {
 		swagger.nullable = true;
 	}
@@ -246,7 +248,11 @@ var parseAsType = {
 
 		var itemsSchema;
 		if (firstItem.ref) {
-			itemsSchema = index ? firstItem.otherwise : firstItem.then;
+			if (schema._baseType && !firstItem.otherwise) {
+				itemsSchema = index ? firstItem.then : schema._baseType;
+			} else {
+				itemsSchema = index ? firstItem.otherwise : firstItem.then;
+			}
 		} else if (index) {
 			itemsSchema = get(matches, [ index, 'schema' ]);
 		} else {
