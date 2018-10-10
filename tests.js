@@ -425,4 +425,12 @@ suite('swagger converts', (s) => {
 			properties: {},
 		}
 	);
+
+	simpleTest(
+		joi.date().default(Date.now, 'current date'),
+		{
+			type: 'string',
+			format: 'date-time',
+	  }
+	);
 });

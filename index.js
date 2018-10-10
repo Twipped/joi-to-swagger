@@ -70,7 +70,7 @@ module.exports = exports = function parse (schema, existingComponents) {
 	}
 
 	var defaultValue = get(schema, '_flags.default');
-	if (defaultValue) {
+	if (defaultValue && typeof defaultValue !== 'function') {
 		swagger.default = defaultValue;
 	}
 
