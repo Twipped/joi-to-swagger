@@ -37,6 +37,10 @@ module.exports = exports = function parse (schema, existingComponents) {
 		return { swagger: refDef(metaDefType, metaDefName) };
 	}
 
+	if (get(schema, '_flags.presence') === 'forbidden') {
+		return false;
+	}
+
 	var swagger;
 	var components = {};
 
@@ -81,10 +85,6 @@ module.exports = exports = function parse (schema, existingComponents) {
 
 	if (override) {
 		Object.assign(swagger, override);
-	}
-
-	if (get(schema, '_flags.presence') === 'forbidden') {
-		return false;
 	}
 
 	return { swagger, components };
@@ -132,11 +132,6 @@ var parseAsType = {
 	},
 	string: (schema) => {
 		var swagger = { type: 'string' };
-
-		if (get(schema, '_flags.presence') === 'forbidden') {
-			return false;
-		}
-
 		var strict = get(schema, '_settings.convert') === false;
 
 		if (find(schema._tests, { name: 'alphanum' })) {
@@ -200,10 +195,6 @@ var parseAsType = {
 	binary: (schema) => {
 		var swagger = { type: 'string', format: 'binary' };
 
-		if (get(schema, '_flags.presence') === 'forbidden') {
-			return false;
-		}
-
 		if (get(schema, '_flags.encoding') === 'base64') {
 			swagger.format = 'byte';
 		}
@@ -227,17 +218,9 @@ var parseAsType = {
 		return swagger;
 	},
 	date: (schema) => {
-
-		if (get(schema, '_flags.presence') === 'forbidden') {
-			return false;
-		}
 		return { type: 'string', format: 'date-time' };
 	},
 	boolean: (schema) => {
-
-		if (get(schema, '_flags.presence') === 'forbidden') {
-			return false;
-		}
 		return { type: 'boolean' };
 	},
 	alternatives: (schema, existingComponents, newComponentsByRef) => {
@@ -273,10 +256,6 @@ var parseAsType = {
 		var itemsSchema = get(schema, [ '_inner', 'items', index ]);
 
 		if (!itemsSchema) throw Error('Array schema does not define an items schema at index ' + index);
-
-		if (get(itemsSchema, '_flags.presence') === 'forbidden') {
-			return false;
-		}
 
 		var items = exports(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 
