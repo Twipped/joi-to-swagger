@@ -432,6 +432,6 @@ suite('swagger converts', (s) => {
 		{
 			type: 'string',
 			format: 'date-time',
-	  }
+		}
 	);
 });

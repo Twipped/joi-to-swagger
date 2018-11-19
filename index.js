@@ -217,12 +217,8 @@ var parseAsType = {
 
 		return swagger;
 	},
-	date: (schema) => {
-		return { type: 'string', format: 'date-time' };
-	},
-	boolean: (schema) => {
-		return { type: 'boolean' };
-	},
+	date: (/* schema */) => ({ type: 'string', format: 'date-time' }),
+	boolean: (/* schema */) => ({ type: 'boolean' }),
 	alternatives: (schema, existingComponents, newComponentsByRef) => {
 		var index = meta(schema, 'swaggerIndex') || 0;
 
