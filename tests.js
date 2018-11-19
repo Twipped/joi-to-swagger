@@ -234,6 +234,7 @@ suite('swagger converts', (s) => {
 	simpleTest(
 		joi.object({
 			req: joi.string().required(),
+			forbiddenAny: joi.forbidden(),
 			forbiddenString: joi.string().forbidden(),
 			forbiddenNumber: joi.number().forbidden(),
 			forbiddenBoolean: joi.boolean().forbidden(),
