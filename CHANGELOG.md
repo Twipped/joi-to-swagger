@@ -1,9 +1,10 @@
 
 
-3.1.0 / 2018-??-??
+3.1.0 / 2018-12-06
 ==================
 
-  * Fix for crash when an object property is forbidden.
+  * Fix for crash when an object property is forbidden, which now works for any data type. (thank you @david-unergie)
+  * Ignore a `default()` value when it is a function. (thank you @mmed)
   * Added support for `joi.example()` (thank you @Siilwyn)
 
 3.0.0 / 2018-06-19
