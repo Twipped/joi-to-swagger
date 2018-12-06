@@ -26,8 +26,8 @@
   "author": "Jocelyn Badgley <joc@twipped.com>",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "~4.19.1",
-    "eslint-config-chiper": "~2.2.0",
+    "eslint": "~5.0.1",
+    "eslint-config-twipped": "~2.5.0",
     "eslint-plugin-node": "~6.0.0",
     "eslint-plugin-promise": "~3.8.0",
     "joi": "~13.4.0",
