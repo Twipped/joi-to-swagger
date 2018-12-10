@@ -30,11 +30,12 @@ module.exports = exports = function parse (schema, existingComponents) {
 
 	var metaDefName = meta(schema, 'className');
 	var metaDefType = meta(schema, 'classTarget') || 'schemas';
+	var metaOpenAPI20 = meta(schema, 'openAPI20');
 
 	// if the schema has a definition class name, and that
 	// definition is already defined, just use that definition
 	if (metaDefName && get(existingComponents, [ metaDefType, metaDefName ])) {
-		return { swagger: refDef(metaDefType, metaDefName) };
+		return { swagger: refDef(metaDefType, metaDefName, metaOpenAPI20) };
 	}
 
 	if (get(schema, '_flags.presence') === 'forbidden') {
@@ -80,7 +81,7 @@ module.exports = exports = function parse (schema, existingComponents) {
 
 	if (metaDefName) {
 		set(components, [ metaDefType, metaDefName ], swagger);
-		return { swagger: refDef(metaDefType, metaDefName), components };
+		return { swagger: refDef(metaDefType, metaDefName, metaOpenAPI20), components };
 	}
 
 	if (override) {
@@ -328,8 +329,14 @@ function meta (schema, key) {
 	return get(flattened, key);
 }
 
-function refDef (type, name) {
-	return { $ref: '#/components/' + type + '/' + name };
+function refDef (type, name, compatible) {
+	var $ref = [
+		compatible ? '#' : '#/components',
+		compatible && type === 'schemas' ? 'definitions' : type,
+		name,
+	].join('/');
+
+	return { $ref };
 }
 
 // var inspectU = require('util').inspect;

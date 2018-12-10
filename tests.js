@@ -404,6 +404,39 @@ suite('swagger converts', (s) => {
 
 	simpleTest(
 		{
+			body: joi.object().keys({
+				subject: joi.string(),
+				message: joi.string().trim().min(1, 'utf8').max(400, 'utf8').meta({ className: 'MessageBody', openAPI20: true }),
+			}).meta({ className: 'MessageCreate', classTarget: 'requestBodies', openAPI20: true }),
+		},
+		{
+			type: 'object',
+			properties: {
+				body: { '$ref': '#/requestBodies/MessageCreate' },
+			},
+		},
+		{
+			schemas: {
+				'MessageBody': {
+					maxLength: 400,
+					minLength: 1,
+					type: 'string',
+				},
+			},
+			requestBodies: {
+				'MessageCreate': {
+					type: 'object',
+					properties: {
+						message: { '$ref': '#/definitions/MessageBody' },
+						subject: { 'type': 'string' },
+					},
+				},
+			},
+		}
+	);
+
+	simpleTest(
+		{
 			id: joi.string()
 				.when('version', { is: joi.number().greater(0).required(), then: joi.string().required() }),
 		},

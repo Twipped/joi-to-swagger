@@ -118,6 +118,8 @@ The following may be provided on a joi `.meta()` object to explicitly override d
 
 **classTarget**: Named components are assumed to be schemas, and are referenced as `components/schemas/ComponentName`. If a `classTarget` meta value is provided (such as `parameters`), this will replace schemas in the reference.
 
+**openAPI20**: If this meta tag set to `true`, it will create openAPI2.0-compatible `$ref` tag (read 'Differences From OpenAPI 2.0' https://swagger.io/docs/specification/components/)
+
 **swaggerIndex**: Swagger's deterministic design disallows for supporting multiple type components. Because of this, only a single schema from `.alternatives()` and `.array().items()` may be converted to swagger. By default J2S will use the first component. Defining a different zero based index for this meta tag will override that behavior.
 
 **swagger**: To explicitly define your own swagger component for a joi schema object, place that swagger object in the `swagger` meta tag. It will be mixed in to the schema that J2S produces.
