@@ -26,16 +26,16 @@
   "author": "Jocelyn Badgley <joc@twipped.com>",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "~5.0.1",
+    "eslint": "~5.12.0",
     "eslint-config-twipped": "~2.5.0",
     "eslint-plugin-node": "~6.0.0",
     "eslint-plugin-promise": "~3.8.0",
-    "joi": "~13.4.0",
+    "joi": "~14.3.1",
     "tap": "~12.0.1",
     "tapsuite": "~1.1.1"
   },
   "peerDependencies": {
-    "joi": ">= 13"
+    "joi": ">= 14"
   },
   "files": [
     "index.js"

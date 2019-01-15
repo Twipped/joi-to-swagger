@@ -316,7 +316,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
-		joi.string().example('sel').example('wyn'),
+		joi.string().example('sel', 'wyn'),
 		{
 			examples: [
 				'sel',

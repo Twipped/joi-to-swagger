@@ -108,7 +108,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 
 - `any.example()` sets the `"example"` or `"examples"`.
   - `.example('hi')` -> `"example": "hi"`
-  - `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
+  - `.example('hi', 'hey')` -> `"examples": ["hi", "hey"]`
 
 ## Meta Overrides
 
