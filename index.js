@@ -1,10 +1,11 @@
 'use strict';
 
 var joi = require('joi');
-var find = require('lodash.find');
-var get = require('lodash.get');
-var set = require('lodash.set');
-var merge = require('lodash.merge');
+var lodash = require('lodash');
+var find = lodash.find;
+var get = lodash.get;
+var set = lodash.set;
+var merge = lodash.merge;
 
 var patterns = {
 	alphanum: '^[a-zA-Z0-9]*$',
