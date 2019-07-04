@@ -3,6 +3,7 @@
   "version": "3.1.0",
   "description": "",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "tap tests.js",
     "test:travis": "tap --reporter=tap tests.js",
@@ -38,7 +39,8 @@
     "joi": ">= 13"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "dependencies": {
     "lodash.find": "^4.0.0",
