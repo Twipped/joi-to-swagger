@@ -317,13 +317,17 @@ suite('swagger converts', (s) => {
 
 	simpleTest(
 		joi.string().example('sel').example('wyn'),
-		{
-			examples: [
-				'sel',
-				'wyn',
-			],
-			type: 'string',
-		}
+		joi.version < '14'
+			? {
+				examples: [
+					'sel',
+					'wyn',
+				],
+				type: 'string',
+			} : {
+				example: 'wyn',
+				type: 'string',
+			}
 	);
 
 	simpleTest(

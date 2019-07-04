@@ -62,9 +62,9 @@ module.exports = exports = function parse (schema, existingComponents) {
 
 	if (schema._examples.length) {
 		if (schema._examples.length === 1) {
-			swagger.example = schema._examples[0];
+			swagger.example = extractExampleValue(schema._examples[0]);
 		} else {
-			swagger.examples = schema._examples;
+			swagger.examples = schema._examples.map(extractExampleValue);
 		}
 	}
 
@@ -330,6 +330,10 @@ function meta (schema, key) {
 
 function refDef (type, name) {
 	return { $ref: '#/components/' + type + '/' + name };
+}
+
+function extractExampleValue (example) {
+	return joi.version < '14' ? example : example.value;
 }
 
 // var inspectU = require('util').inspect;
