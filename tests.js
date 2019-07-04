@@ -438,4 +438,13 @@ suite('swagger converts', (s) => {
 			format: 'date-time',
 		}
 	);
+	// test files
+	simpleTest(
+		joi.any().meta({ swaggerType: 'file' }).description('simpleFile'),
+		{
+			description: 'simpleFile',
+			in: 'formData',
+			type: 'file',
+		}
+	);
 });

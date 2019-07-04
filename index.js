@@ -12,6 +12,30 @@ var patterns = {
 	alphanumUpper: '^[A-Z0-9]*$',
 };
 
+var isJoi = function (joiObj) {
+	return !!((joiObj && joiObj.isJoi));
+};
+
+var hasJoiMeta = function (joiObj) {
+	return !!((isJoi(joiObj) && Array.isArray(joiObj._meta)));
+};
+
+var getJoiMetaProperty = function (joiObj, propertyName) {
+
+	// get headers added using meta function
+	if (isJoi(joiObj) && hasJoiMeta(joiObj)) {
+
+		var meta = joiObj._meta;
+		let i = meta.length;
+		while (i--) {
+			if (meta[i][propertyName]) {
+				return meta[i][propertyName];
+			}
+		}
+	}
+	return undefined;
+};
+
 module.exports = exports = function parse (schema, existingComponents) {
 	// inspect(schema);
 
@@ -318,6 +342,18 @@ var parseAsType = {
 			swagger.additionalProperties = false;
 		}
 
+		return swagger;
+	},
+	any: (schema) => {
+		var swagger = {};
+		// convert property to file upload, if indicated by meta property
+		if (getJoiMetaProperty(schema, 'swaggerType') === 'file') {
+			swagger.type = 'file';
+			swagger.in = 'formData';
+		}
+		if (schema._description) {
+			swagger.description = schema._description;
+		}
 		return swagger;
 	},
 };
