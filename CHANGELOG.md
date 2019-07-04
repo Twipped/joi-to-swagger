@@ -1,4 +1,10 @@
+3.2.0 / 2019-07-04
+==================
 
+  * Use lodash instead of lodash subpackages (thanks to @sabdullahpear)
+  * Add Typescript typings (thanks to @Mairu)
+  * Fix joi .example() for joi >= 14.x (thanks to @lucasconstantino and @DragFAQ)
+  * Add file support (thanks to @qwang1113)
 
 3.1.0 / 2018-12-06
 ==================

@@ -1,10 +1,7 @@
 'use strict';
 
 var joi = require('joi');
-var find = require('lodash.find');
-var get = require('lodash.get');
-var set = require('lodash.set');
-var merge = require('lodash.merge');
+var { find, get, set, merge } = require('lodash');
 
 var patterns = {
 	alphanum: '^[a-zA-Z0-9]*$',
@@ -25,11 +22,11 @@ var getJoiMetaProperty = function (joiObj, propertyName) {
 	// get headers added using meta function
 	if (isJoi(joiObj) && hasJoiMeta(joiObj)) {
 
-		var meta = joiObj._meta;
-		let i = meta.length;
+		var joiMeta = joiObj._meta;
+		let i = joiMeta.length;
 		while (i--) {
-			if (meta[i][propertyName]) {
-				return meta[i][propertyName];
+			if (joiMeta[i][propertyName]) {
+				return joiMeta[i][propertyName];
 			}
 		}
 	}

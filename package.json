@@ -27,12 +27,12 @@
   "author": "Jocelyn Badgley <joc@twipped.com>",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "~5.0.1",
-    "eslint-config-twipped": "~2.5.0",
-    "eslint-plugin-node": "~6.0.0",
-    "eslint-plugin-promise": "~3.8.0",
-    "joi": "~13.4.0",
-    "tap": "~12.0.1",
+    "eslint": "~5.16.0",
+    "eslint-config-twipped": "~3.0.0",
+    "eslint-plugin-node": "~8.0.1",
+    "eslint-plugin-promise": "~4.1.1",
+    "joi": "~14.3.1",
+    "tap": "~12.6.1",
     "tapsuite": "~1.1.1"
   },
   "peerDependencies": {
@@ -43,9 +43,6 @@
     "index.d.ts"
   ],
   "dependencies": {
-    "lodash.find": "^4.0.0",
-    "lodash.get": "^4.0.2",
-    "lodash.merge": "~4.6.1",
-    "lodash.set": "~4.3.2"
+    "lodash": "^4.17.11"
   }
 }

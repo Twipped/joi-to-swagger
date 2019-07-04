@@ -1,7 +1,9 @@
 joi-to-swagger
 ==============
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Twipped/joi-to-swagger.svg)](https://greenkeeper.io/)
+[![npm](https://img.shields.io/npm/v/joi-to-swagger.svg?logo=npm)](https://www.npmjs.com/package/joi-to-swagger)
+[![Dependency Status](https://img.shields.io/david/Twipped/joi-to-swagger.svg?style=flat-square)](https://david-dm.org/Twipped/joi-to-swagger)
+[![Download Status](https://img.shields.io/npm/dm/joi-to-swagger.svg?style=flat-square)](https://www.npmjs.com/package/joi-to-swagger)
 
 Conversion library for transforming [Joi](http://npm.im/joi) schema objects into [Swagger](http://swagger.io) schema definitions.
 
@@ -16,7 +18,7 @@ joi.object().keys({
 })
 ```
 
-```js
+```json5
 // output
 {
   "type": "object",
@@ -108,7 +110,10 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 
 - `any.example()` sets the `"example"` or `"examples"`.
   - `.example('hi')` -> `"example": "hi"`
-  - `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
+  - joi < v14: `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
+  - joi v14: `.example('hi', 'hey')` -> `"examples": ["hi", "hey"]`
+
+- `joi.any().meta({ swaggerType: 'file' }).description('simpleFile')` add a file to the swagger structure
 
 ## Meta Overrides
 
@@ -123,3 +128,5 @@ The following may be provided on a joi `.meta()` object to explicitly override d
 **swagger**: To explicitly define your own swagger component for a joi schema object, place that swagger object in the `swagger` meta tag. It will be mixed in to the schema that J2S produces.
 
 **swaggerOverride**: If this meta tag is truthy, the `swagger` component will replace the result for that schema instead of mixing in to it.
+
+**swaggerType**: Can be used with the .any() type to add files.

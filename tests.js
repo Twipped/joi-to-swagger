@@ -330,6 +330,19 @@ suite('swagger converts', (s) => {
 			}
 	);
 
+	if (joi.version > '13.9') {
+		simpleTest(
+			joi.string().example('sel', 'wyn'),
+			{
+				examples: [
+					'sel',
+					'wyn',
+				],
+				type: 'string',
+			}
+		);
+	}
+
 	simpleTest(
 		{
 			start: joi.object().unknown(false).keys({
