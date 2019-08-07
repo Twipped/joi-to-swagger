@@ -1,7 +1,7 @@
 
 var suite = require('tapsuite');
 var parser = require('./');
-var joi = require('joi');
+var joi = require('@hapi/joi');
 
 suite('swagger converts', (s) => {
 	var i = 0;

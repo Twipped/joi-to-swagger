@@ -1,6 +1,6 @@
 'use strict';
 
-var joi = require('joi');
+var joi = require('@hapi/joi');
 var { find, get, set, merge } = require('lodash');
 
 var patterns = {

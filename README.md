@@ -5,7 +5,7 @@ joi-to-swagger
 [![Dependency Status](https://img.shields.io/david/Twipped/joi-to-swagger.svg?style=flat-square)](https://david-dm.org/Twipped/joi-to-swagger)
 [![Download Status](https://img.shields.io/npm/dm/joi-to-swagger.svg?style=flat-square)](https://www.npmjs.com/package/joi-to-swagger)
 
-Conversion library for transforming [Joi](http://npm.im/joi) schema objects into [Swagger](http://swagger.io) schema definitions.
+Conversion library for transforming [Joi](http://npm.im/@hapi/joi) schema objects into [Swagger](http://swagger.io) schema definitions.
 
 ```js
 // input

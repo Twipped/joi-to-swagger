@@ -1,3 +1,9 @@
+4.0.0 / 2019-08-07
+=================
+
+  * BREAKING CHANGE: All users have to upgrade to @hapi/joi as this will not work with joi.
+  * Upgrade joi to @hapi/joi
+
 3.2.0 / 2019-07-04
 ==================
 
