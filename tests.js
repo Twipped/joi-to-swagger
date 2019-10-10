@@ -464,10 +464,10 @@ suite('swagger converts', (s) => {
 		joi.extend({
 			name: 'myType',
 			base: joi.object({
-				property1: joi.string().required()
+				property1: joi.string().required(),
 			}).meta({
-				baseType: 'object'
-			})
+				baseType: 'object',
+			}),
 		}).myType(),
 		{ type: 'object', required: [ 'property1' ], properties: { property1: { type: 'string' } } }
 	);
