@@ -65,10 +65,12 @@ module.exports = exports = function parse (schema, existingComponents) {
 	var swagger;
 	var components = {};
 
-	if (parseAsType[schema._type]) {
-		swagger = parseAsType[schema._type](schema, existingComponents, components);
+	const type = meta(schema, 'baseType') || schema._type;
+
+	if (parseAsType[type]) {
+		swagger = parseAsType[type](schema, existingComponents, components);
 	} else {
-		throw new TypeError(`${schema._type} is not a recognized Joi type.`);
+		throw new TypeError(`${type} is not a recognized Joi type.`);
 	}
 
 	if (!swagger) return { swagger, components };
