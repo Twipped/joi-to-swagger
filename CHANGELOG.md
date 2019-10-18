@@ -1,3 +1,8 @@
+3.3.0 / 2019-10-18
+==================
+
+  * add support to handle custom types via joi.extend (thanks to @qbikez)
+
 3.2.0 / 2019-07-04
 ==================
 

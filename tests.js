@@ -451,6 +451,7 @@ suite('swagger converts', (s) => {
 			format: 'date-time',
 		}
 	);
+
 	// test files
 	simpleTest(
 		joi.any().meta({ swaggerType: 'file' }).description('simpleFile'),
@@ -460,15 +461,23 @@ suite('swagger converts', (s) => {
 			type: 'file',
 		}
 	);
-	simpleTest(
-		joi.extend({
-			name: 'myType',
-			base: joi.object({
-				property1: joi.string().required(),
+
+	// extend test
+	simpleTest((() => {
+		const customJoi = joi.extend({
+			name: 'customStringType',
+			base: joi.string().meta({ baseType: 'string' }),
+		});
+
+		return customJoi.extend({
+			name: 'customObjectType',
+			base: customJoi.object({
+				property1: customJoi.customStringType().required(),
 			}).meta({
 				baseType: 'object',
 			}),
-		}).myType(),
-		{ type: 'object', required: [ 'property1' ], properties: { property1: { type: 'string' } } }
+		}).customObjectType();
+	})(),
+	{ type: 'object', required: [ 'property1' ], properties: { property1: { type: 'string' } } }
 	);
 });

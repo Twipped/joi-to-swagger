@@ -130,3 +130,15 @@ The following may be provided on a joi `.meta()` object to explicitly override d
 **swaggerOverride**: If this meta tag is truthy, the `swagger` component will replace the result for that schema instead of mixing in to it.
 
 **swaggerType**: Can be used with the .any() type to add files.
+
+## Custom Types (joi.extend)
+
+For supporting custom joi types you can add the needed type information using a the meta property **baseType**.
+
+```js
+const customJoi = joi.extend({
+    name: 'customStringType',
+    base: joi.string().meta({ baseType: 'string' }),
+    // ...
+});
+```
