@@ -1,4 +1,4 @@
-import { Schema } from 'joi';
+import { Schema } from '@hapi/joi';
 
 interface SwaggerSchema {
     [propName: string]: any;

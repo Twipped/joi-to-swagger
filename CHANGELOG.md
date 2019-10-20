@@ -1,3 +1,10 @@
+4.0.0 / 2019-10-19
+==================
+
+  * BREAKING CHANGE: Move joi to @hapi/joi package with version > 16.0 which was a major rewrite
+  * BREAKING CHANGE: Instead of use joi.object().unknown(false) to disallow additional properties
+      this is the default now. To allow additional properties use joi.object().unknown()
+
 3.3.0 / 2019-10-18
 ==================
 

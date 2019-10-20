@@ -2,6 +2,7 @@ joi-to-swagger
 ==============
 
 [![npm](https://img.shields.io/npm/v/joi-to-swagger.svg?logo=npm)](https://www.npmjs.com/package/joi-to-swagger)
+[![travis](https://img.shields.io/travis/Twipped/joi-to-swagger/master.svg?label=tests&logo=travis-ci)](https://travis-ci.org/Twipped/joi-to-swagger)
 [![Dependency Status](https://img.shields.io/david/Twipped/joi-to-swagger.svg?style=flat-square)](https://david-dm.org/Twipped/joi-to-swagger)
 [![Download Status](https://img.shields.io/npm/dm/joi-to-swagger.svg?style=flat-square)](https://www.npmjs.com/package/joi-to-swagger)
 
@@ -43,7 +44,8 @@ joi.object().keys({
     "active": {
       "type": "boolean"
     }
-  }
+  },
+  "additionalProperties": false
 }
 ```
 
