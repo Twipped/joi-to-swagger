@@ -5,7 +5,9 @@ joi-to-swagger
 [![Dependency Status](https://img.shields.io/david/Twipped/joi-to-swagger.svg?style=flat-square)](https://david-dm.org/Twipped/joi-to-swagger)
 [![Download Status](https://img.shields.io/npm/dm/joi-to-swagger.svg?style=flat-square)](https://www.npmjs.com/package/joi-to-swagger)
 
-Conversion library for transforming [Joi](http://npm.im/joi) schema objects into [Swagger](http://swagger.io) schema definitions.
+Conversion library for transforming [@hapi/Joi](https://www.npmjs.com/package/@hapi/joi) schema objects into [Swagger](http://swagger.io) schema definitions.
+
+This version only support @hapi/Joi 16+. For earlier versions support, take older versions of this package.
 
 ```js
 // input
@@ -62,7 +64,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 ## Supported Conventions:
 
 - `joi.object()`
-  - `.unknown(false)` -> `additionalProperties: false`
+  - `.unknown(true)` -> Does not add `additionalProperties: false`
   - `.required()` on object members produces a `"required": []` array
 
 - `joi.array().items()` defines the structure using the first schema provided on `.items()` (see below for how to override)
@@ -73,7 +75,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 - `joi.number()` produces `"type": "number"` with a format of `"float"`
   - `.precision()` -> `"format": "double"`
   - `.integer()` -> `"type": "integer"`
-  - `.strict().only(1, 2, '3')` -> `"enum": [1, 2]` (note that non-numbers are omitted due to swagger type constraints)
+  - `.strict().valid(1, 2, '3')` -> `"enum": [1, 2]` (note that non-numbers are omitted due to swagger type constraints)
   - `.allow(null)` -> `"nullable": true`
   - `.min(5)` -> `"minimum": 5`
   - `.max(10)` -> `"maximum": 10`
@@ -81,7 +83,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
   - `.negative()` -> `"maximum": -1`
 
 - `joi.string()` produces `"type": "string"` with no formatting
-  - `.strict().only('A', 'B', 1)` -> `"enum": ["A", "B"]` (note that non-strings are omitted due to swagger type constraints)
+  - `.strict().valid('A', 'B', 1)` -> `"enum": ["A", "B"]` (note that non-strings are omitted due to swagger type constraints)
   - `.alphanum()` -> `"pattern": "/^[a-zA-Z0-9]*$/"`
   - `.alphanum().lowercase()`
   - `.alphanum().uppercase()`
@@ -90,7 +92,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
   - `.token().uppercase()`
   - `.email()` -> `"format": "email"`
   - `.isoDate()` -> `"format": "date-time"`
-  - `.regex(/foo/)` -> `"pattern": "/foo/"`
+  - `.pattern(/foo/)` -> `"pattern": "/foo/"`
   - `.allow(null)` -> `"nullable": true`
   - `.min(5)` -> `"minLength": 5`
   - `.max(10)` -> `"maxLength": 10`
@@ -110,8 +112,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 
 - `any.example()` sets the `"example"` or `"examples"`.
   - `.example('hi')` -> `"example": "hi"`
-  - joi < v14: `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
-  - joi v14: `.example('hi', 'hey')` -> `"examples": ["hi", "hey"]`
+  - `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
 
 - `joi.any().meta({ swaggerType: 'file' }).description('simpleFile')` add a file to the swagger structure
 

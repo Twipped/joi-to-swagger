@@ -1,7 +1,7 @@
 
 var suite = require('tapsuite');
 var parser = require('./');
-var joi = require('joi');
+var joi = require('@hapi/joi');
 
 suite('swagger converts', (s) => {
 	var i = 0;
@@ -108,6 +108,22 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		joi.string().token(),
+		{
+			type: 'string',
+			pattern: '^[a-zA-Z0-9_]*$',
+		}
+	);
+
+	simpleTest(
+		joi.string().strict().token().lowercase(),
+		{
+			type: 'string',
+			pattern: '^[a-z0-9_]*$',
+		}
+	);
+
+	simpleTest(
 		// confirm that non-strict mode enables insensitive match
 		joi.string().alphanum().uppercase(),
 		{
@@ -141,7 +157,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
-		joi.string().only('A', 'B', 'C', null),
+		joi.string().valid('A', 'B', 'C', null),
 		{
 			type: 'string',
 			enum: [ 'A', 'B', 'C' ],
@@ -245,8 +261,20 @@ suite('swagger converts', (s) => {
 				otherwise: joi.forbidden(),
 			})
 				.meta({ swaggerIndex: 1 }),
-		}),
-		{ type: 'object', required: [ 'req' ], properties: { req: { type: 'string' } } }
+		}).unknown(true),
+		{
+			type: 'object',
+			required: [ 'req' ],
+			properties: {
+				req: {
+					type: 'string',
+				},
+				maybeRequiredOrForbidden: {
+					type: 'number',
+					format: 'float',
+				},
+			},
+		}
 	);
 
 
@@ -254,7 +282,7 @@ suite('swagger converts', (s) => {
 		joi.object().keys({
 			id: joi.number().integer().required(),
 			name: joi.string(),
-		}),
+		}).unknown(true),
 		{
 			type: 'object',
 			required: [ 'id' ],
@@ -268,8 +296,8 @@ suite('swagger converts', (s) => {
 	simpleTest(
 		joi.object().keys({
 			name: joi.string(),
-			settings: joi.object(),
-		}),
+			settings: joi.object().unknown(true),
+		}).unknown(true),
 		{
 			type: 'object',
 			properties: {
@@ -317,31 +345,14 @@ suite('swagger converts', (s) => {
 
 	simpleTest(
 		joi.string().example('sel').example('wyn'),
-		joi.version < '14'
-			? {
-				examples: [
-					'sel',
-					'wyn',
-				],
-				type: 'string',
-			} : {
-				example: 'wyn',
-				type: 'string',
-			}
+		{
+			examples: [
+				'sel',
+				'wyn',
+			],
+			type: 'string',
+		}
 	);
-
-	if (joi.version > '13.9') {
-		simpleTest(
-			joi.string().example('sel', 'wyn'),
-			{
-				examples: [
-					'sel',
-					'wyn',
-				],
-				type: 'string',
-			}
-		);
-	}
 
 	simpleTest(
 		{
@@ -360,6 +371,7 @@ suite('swagger converts', (s) => {
 				start: { $ref: '#/components/schemas/GeoPoint' },
 				stop: { $ref: '#/components/schemas/GeoPoint' },
 			},
+			additionalProperties: false,
 		},
 		{
 			schemas: {
@@ -391,13 +403,14 @@ suite('swagger converts', (s) => {
 			body: joi.object().keys({
 				subject: joi.string(),
 				message: joi.string().trim().min(1, 'utf8').max(400, 'utf8').meta({ className: 'MessageBody' }),
-			}).meta({ className: 'MessageCreate', classTarget: 'requestBodies' }),
+			}).meta({ className: 'MessageCreate', classTarget: 'requestBodies' }).unknown(true),
 		},
 		{
 			type: 'object',
 			properties: {
 				body: { '$ref': '#/components/requestBodies/MessageCreate' },
 			},
+			additionalProperties: false,
 		},
 		{
 			schemas: {
@@ -429,6 +442,7 @@ suite('swagger converts', (s) => {
 			properties: {
 				id: { type: 'string' },
 			},
+			additionalProperties: false,
 		}
 	);
 
@@ -441,11 +455,12 @@ suite('swagger converts', (s) => {
 		{
 			type: 'object',
 			properties: {},
+			additionalProperties: false,
 		}
 	);
 
 	simpleTest(
-		joi.date().default(Date.now, 'current date'),
+		joi.date().default(Date.now),
 		{
 			type: 'string',
 			format: 'date-time',
@@ -465,17 +480,17 @@ suite('swagger converts', (s) => {
 	// extend test
 	simpleTest((() => {
 		const customJoi = joi.extend({
-			name: 'customStringType',
+			type: 'customStringType',
 			base: joi.string().meta({ baseType: 'string' }),
 		});
 
 		return customJoi.extend({
-			name: 'customObjectType',
+			type: 'customObjectType',
 			base: customJoi.object({
 				property1: customJoi.customStringType().required(),
 			}).meta({
 				baseType: 'object',
-			}),
+			}).unknown(true),
 		}).customObjectType();
 	})(),
 	{ type: 'object', required: [ 'property1' ], properties: { property1: { type: 'string' } } }

@@ -31,7 +31,7 @@
     "eslint-config-twipped": "~3.3.0",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "joi": "^14.3.1",
+    "@hapi/joi": "^16.0.0",
     "tap": "^14.7.2",
     "tapsuite": "^2.0.1"
   },
