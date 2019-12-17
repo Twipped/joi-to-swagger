@@ -162,7 +162,7 @@ const parseAsType = {
 			itemsSchema = firstItem.schema;
 		}
 
-		const items = exports(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
+		const items = parse(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 		if (get(itemsSchema, '_flags.presence') === 'required') {
 			items.swagger.__required = true;
 		}
@@ -177,7 +177,7 @@ const parseAsType = {
 
 		if (!itemsSchema) throw Error('Array schema does not define an items schema at index ' + index);
 
-		const items = exports(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
+		const items = parse(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 
 		merge(newComponentsByRef, items.components || {});
 
@@ -202,7 +202,7 @@ const parseAsType = {
 		const children = get(schema, '$_terms.keys') || [];
 		children.forEach((child) => {
 			const key = child.key;
-			const prop = exports(child.schema, combinedComponents);
+			const prop = parse(child.schema, combinedComponents);
 			if (!prop.swagger) { // swagger is falsy if joi.forbidden()
 				return;
 			}
@@ -241,7 +241,7 @@ const parseAsType = {
 	},
 };
 
-module.exports = exports = function parse (schema, existingComponents) {
+function parse (schema, existingComponents) {
 	// inspect(schema);
 
 	if (!schema) throw new Error('No schema was passed.');
@@ -321,7 +321,10 @@ module.exports = exports = function parse (schema, existingComponents) {
 	}
 
 	return { swagger, components };
-};
+}
+
+module.exports = exports = parse;
+exports.default = parse;
 
 // const inspectU = require('util').inspect;
 // function inspect (value) {
