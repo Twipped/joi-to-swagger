@@ -114,6 +114,11 @@ const parseAsType = {
 			if (swagger.pattern) delete swagger.pattern;
 		}
 
+		if (find(schema._rules, { name: 'guid' })) {
+			swagger.format = 'uuid';
+			if (swagger.pattern) delete swagger.pattern;
+		}
+
 		const pattern = find(schema._rules, { name: 'pattern' });
 		if (pattern) {
 			swagger.pattern = pattern.args.regex.toString().slice(1, -1);

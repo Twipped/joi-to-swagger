@@ -157,6 +157,14 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		joi.string().uuid(),
+		{
+			type: 'string',
+			format: 'uuid',
+		}
+	);
+
+	simpleTest(
 		joi.boolean(),
 		{
 			type: 'boolean',
