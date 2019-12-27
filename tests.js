@@ -157,6 +157,16 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		joi.string().invalid('A', 'B', 'C'),
+		{
+			type: 'string',
+			not: {
+				enum: [ 'A', 'B', 'C' ],
+			},
+		}
+	);
+
+	simpleTest(
 		joi.string().uuid(),
 		{
 			type: 'string',
@@ -199,7 +209,17 @@ suite('swagger converts', (s) => {
 		joi.array().items(joi.boolean(), joi.date()),
 		{
 			type: 'array',
-			items: { type: 'boolean' },
+			items: {
+				oneOf: [
+					{
+						type: 'boolean',
+					},
+					{
+						type: 'string',
+						format: 'date-time',
+					},
+				],
+			},
 		}
 	);
 
@@ -213,57 +233,216 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
-		joi.array().items(joi.string(), joi.number()).meta({ swaggerIndex: 1 }).min(1).max(5),
+		joi.array().items(joi.string(), joi.number()).min(1).max(5),
 		{
 			type: 'array',
-			items: { type: 'number', format: 'float' },
+			items: {
+				oneOf: [
+					{
+						type: 'string',
+					},
+					{
+						type: 'number',
+						format: 'float',
+					},
+				],
+			},
 			minItems: 1,
 			maxItems: 5,
 		}
 	);
 
 	simpleTest(
-		joi.alternatives(joi.string(), joi.number()).meta({ swaggerIndex: 1 }),
-		{ type: 'number', format: 'float' }
+		joi.alternatives(joi.string(), joi.number()),
+		{
+			anyOf: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'number',
+					format: 'float',
+				},
+			],
+		}
+	);
+
+	simpleTest(
+		joi.alternatives(
+			joi.object({
+				a: joi.string().invalid('A', 'B', 'C').required(),
+				b: joi.number().integer().valid(1, 2, 3),
+			}),
+			joi.object({
+				c: joi.string().invalid('E', 'F', 'G'),
+				d: joi.number().integer().valid(4, 5, 6).required(),
+			})
+
+		).match('one'),
+		{
+			oneOf: [
+				{
+					type: 'object',
+					required: [ 'a' ],
+					properties: {
+						a: {
+							type: 'string',
+							not: {
+								enum: [ 'A', 'B', 'C' ],
+							},
+						},
+						b: {
+							type: 'integer',
+							enum: [ 1, 2, 3 ],
+						},
+					},
+					additionalProperties: false,
+				},
+				{
+					type: 'object',
+					required: [ 'd' ],
+					properties: {
+						c: {
+							type: 'string',
+							not: {
+								enum: [ 'E', 'F', 'G' ],
+							},
+						},
+						d: {
+							type: 'integer',
+							enum: [ 4, 5, 6 ],
+						},
+					},
+					additionalProperties: false,
+				},
+			],
+		}
 	);
 
 	// TODO -> any
-	// simpleTest(
-	// 	joi.when('myRequiredField', {
-	// 		is: true,
-	// 		then: joi.string(),
-	// 		otherwise: joi.number(),
-	// 	}),
-	// 	{ type: 'string' }
-	// );
-	//
-	// simpleTest(
-	// 	joi.when('myRequiredField', {
-	// 		is: true,
-	// 		then: joi.string(),
-	// 		otherwise: joi.number(),
-	// 	}).meta({ swaggerIndex: 1 }),
-	// 	{ type: 'number', format: 'float' }
-	// );
+	simpleTest(
+		joi.when('myRequiredField', {
+			is: true,
+			then: joi.string(),
+			otherwise: joi.number(),
+		}),
+		{
+			oneOf: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'number',
+					format: 'float',
+				},
+			],
+		}
+	);
 
-	//
-	// simpleTest(
-	// 	joi.object({
-	// 		req: joi.string().required(),
-	// 		forbiddenAny: joi.forbidden(),
-	// 		forbiddenString: joi.string().forbidden(),
-	// 		forbiddenNumber: joi.number().forbidden(),
-	// 		forbiddenBoolean: joi.boolean().forbidden(),
-	// 		forbiddenBinary: joi.binary().forbidden(),
-	// 		maybeRequiredOrForbidden: joi.number().when('someField', {
-	// 			is: true,
-	// 			then: joi.required(),
-	// 			otherwise: joi.forbidden(),
-	// 		})
-	// 			.meta({ swaggerIndex: 1 }),
-	// 	}),
-	// 	{ type: 'object', required: [ 'req' ], properties: { req: { type: 'string' } } }
-	// );
+	simpleTest(
+		{
+			a: joi.any()
+				.when('b', {
+					is: joi.exist(),
+					then: joi.string().valid('A'),
+					otherwise: joi.string().valid('B'),
+				})
+				.when('c', { is: joi.number().min(10), then: joi.string().valid('C') }),
+			b: joi.any(),
+			c: joi.number(),
+		},
+		{
+			type: 'object',
+			properties: {
+				a: {
+					anyOf: [
+						{
+							type: 'string',
+							enum: [ 'A' ],
+						},
+						{
+							type: 'string',
+							enum: [ 'B' ],
+						},
+						{
+							type: 'string',
+							enum: [ 'C' ],
+						},
+					],
+				},
+				b: {},
+				c: {
+					type: 'number',
+					format: 'float',
+				},
+			},
+			additionalProperties: false,
+		}
+	);
+
+	simpleTest(
+		joi.object({
+			a: joi.number().required(),
+			b: joi.number().integer()
+				.when('a', {
+					switch: [
+						{ is: 0, then: joi.valid(1) },
+						{ is: 1, then: joi.valid(2) },
+						{ is: 2, then: joi.valid(3) },
+					],
+					otherwise: joi.valid(4),
+				}),
+		}),
+		{
+			type: 'object',
+			required: [ 'a' ],
+			properties: {
+				a: {
+					type: 'number',
+					format: 'float',
+				},
+				b: {
+					type: 'integer',
+					oneOf: [
+						{ enum: [ 1 ] },
+						{ enum: [ 2 ] },
+						{ enum: [ 3 ] },
+						{ enum: [ 4 ] },
+					],
+				},
+			},
+			additionalProperties: false,
+		}
+	);
+
+	simpleTest(
+		joi.object({
+			req: joi.string().required(),
+			forbiddenAny: joi.forbidden(),
+			forbiddenString: joi.string().forbidden(),
+			forbiddenNumber: joi.number().forbidden(),
+			forbiddenBoolean: joi.boolean().forbidden(),
+			forbiddenBinary: joi.binary().forbidden(),
+			maybeForbidden: joi.when('someField', {
+				is: true,
+				then: joi.number().integer().min(1).max(10),
+				otherwise: joi.forbidden(),
+			}),
+		}),
+		{
+			type: 'object',
+			required: [ 'req' ],
+			properties: {
+				req: { type: 'string' },
+				maybeForbidden: {
+					type: 'integer',
+					minimum: 1,
+					maximum: 10,
+				},
+			},
+			additionalProperties: false,
+		}
+	);
 
 	simpleTest(
 		joi.object().keys({
@@ -284,14 +463,18 @@ suite('swagger converts', (s) => {
 		joi.object().keys({
 			name: joi.string(),
 			settings: joi.object().unknown(),
-		}).unknown(),
+		}).unknown(false),
 		{
 			type: 'object',
 			properties: {
 				name: { type: 'string' },
-				settings: { type: 'object', properties: {} },
+				settings: {
+					type: 'object',
+					properties: {},
+				},
 			},
-		}
+			additionalProperties: false,
+		},
 	);
 
 	simpleTest(
@@ -300,10 +483,10 @@ suite('swagger converts', (s) => {
 		}),
 		{
 			type: 'object',
-			additionalProperties: false,
 			properties: {
 				value: { type: 'string', default: 'hello' },
 			},
+			additionalProperties: false,
 		}
 	);
 
@@ -362,7 +545,6 @@ suite('swagger converts', (s) => {
 				GeoPoint: {
 					type: 'object',
 					required: [ 'lat', 'lon' ],
-					additionalProperties: false,
 					properties: {
 						lat: {
 							type: 'number',
@@ -377,6 +559,7 @@ suite('swagger converts', (s) => {
 							maximum: 180,
 						},
 					},
+					additionalProperties: false,
 				},
 			},
 		}
@@ -461,22 +644,32 @@ suite('swagger converts', (s) => {
 		}
 	);
 
-	// // extend test
-	// simpleTest((() => {
-	// 	const customJoi = joi.extend({
-	// 		name: 'customStringType',
-	// 		base: joi.string().meta({ baseType: 'string' }),
-	// 	});
-	//
-	// 	return customJoi.extend({
-	// 		name: 'customObjectType',
-	// 		base: customJoi.object({
-	// 			property1: customJoi.customStringType().required(),
-	// 		}).meta({
-	// 			baseType: 'object',
-	// 		}),
-	// 	}).customObjectType();
-	// })(),
-	// { type: 'object', required: [ 'property1' ], properties: { property1: { type: 'string' } } }
-	// );
+	// extend test
+	simpleTest(
+		(
+			() => {
+				const customJoi = joi.extend({
+					type: 'customStringType',
+					base: joi.string().meta({ baseType: 'string' }),
+				});
+
+				return customJoi.extend({
+					type: 'customObjectType',
+					base: customJoi.object({
+						property1: customJoi.customStringType().required(),
+					}).meta({
+						baseType: 'object',
+					}),
+				}).customObjectType();
+			}
+		)(),
+		{
+			type: 'object',
+			required: [ 'property1' ],
+			properties: {
+				property1: { type: 'string' },
+			},
+			additionalProperties: false,
+		}
+	);
 });
