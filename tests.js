@@ -344,8 +344,8 @@ suite('swagger converts', (s) => {
 			a: joi.any()
 				.when('b', {
 					is: joi.exist(),
-					then: joi.string().valid('A'),
-					otherwise: joi.string().valid('B'),
+					then: joi.string().valid('A').required(),
+					otherwise: joi.string().valid('B').required(),
 				})
 				.when('c', { is: joi.number().min(10), then: joi.string().valid('C') }),
 			b: joi.any(),
@@ -359,10 +359,12 @@ suite('swagger converts', (s) => {
 						{
 							type: 'string',
 							enum: [ 'A' ],
+							'x-required': true,
 						},
 						{
 							type: 'string',
 							enum: [ 'B' ],
+							'x-required': true,
 						},
 						{
 							type: 'string',
@@ -423,9 +425,9 @@ suite('swagger converts', (s) => {
 			forbiddenNumber: joi.number().forbidden(),
 			forbiddenBoolean: joi.boolean().forbidden(),
 			forbiddenBinary: joi.binary().forbidden(),
-			maybeForbidden: joi.when('someField', {
+			maybeRequiredOrForbidden: joi.number().when('someField', {
 				is: true,
-				then: joi.number().integer().min(1).max(10),
+				then: joi.required(),
 				otherwise: joi.forbidden(),
 			}),
 		}),
@@ -434,10 +436,12 @@ suite('swagger converts', (s) => {
 			required: [ 'req' ],
 			properties: {
 				req: { type: 'string' },
-				maybeForbidden: {
-					type: 'integer',
-					minimum: 1,
-					maximum: 10,
+				maybeRequiredOrForbidden: {
+					type: 'number',
+					format: 'float',
+					oneOf: [
+						{ 'x-required': true },
+					],
 				},
 			},
 			additionalProperties: false,
@@ -602,12 +606,18 @@ suite('swagger converts', (s) => {
 	simpleTest(
 		{
 			id: joi.string()
-				.when('version', { is: joi.number().greater(0).required(), then: joi.string().required() }),
+				.when('version', { is: joi.number().greater(0).required(), then: joi.required() }),
 		},
 		{
 			type: 'object',
 			properties: {
-				id: { type: 'string' },
+				id: {
+					type: 'string',
+					oneOf: [
+						{ 'x-required': true },
+					],
+
+				},
 			},
 			additionalProperties: false,
 		}

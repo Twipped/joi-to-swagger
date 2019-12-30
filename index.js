@@ -70,20 +70,15 @@ function parseWhens (schema, existingComponents, newComponentsByRef) {
 		// eslint-disable-next-line max-len
 		const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 		if (!swagger) continue; // swagger is falsy if joi.forbidden()
-		// if (get(joiSchema, '_flags.presence') === 'required') {
-		// 	swagger['x-required'] = true;
-		// }
+		if (get(joiSchema, '_flags.presence') === 'required') {
+			swagger['x-required'] = true;
+		}
 		merge(newComponentsByRef, components || {});
 		swaggers.push(swagger);
 	}
 	swaggers = uniqWith(swaggers, isEqual);
 
-	let openapi = { [mode]: swaggers };
-	if (swaggers.length <= 1) {
-		openapi = get(swaggers, [ 0 ]) || {};
-	}
-
-	return openapi;
+	return swaggers.length > 0 ? { [mode]: swaggers } : {};
 }
 
 const parseAsType = {
@@ -224,21 +219,16 @@ const parseAsType = {
 			// eslint-disable-next-line max-len
 			const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 			if (!swagger) continue; // swagger is falsy if joi.forbidden()
-			// if (get(joiSchema, '_flags.presence') === 'required') {
-			// 	swagger['x-required'] = true;
-			// }
+			if (get(joiSchema, '_flags.presence') === 'required') {
+				swagger['x-required'] = true;
+			}
 			merge(newComponentsByRef, components || {});
 
 			swaggers.push(swagger);
 		}
 		swaggers = uniqWith(swaggers, isEqual);
 
-		let openapi = { [mode]: swaggers };
-		if (swaggers.length <= 1) {
-			openapi = get(swaggers, [ 0 ]) || {};
-		}
-
-		return openapi;
+		return swaggers.length > 0 ? { [mode]: swaggers } : {};
 	},
 	array: (schema, existingComponents, newComponentsByRef) => {
 		const items = get(schema, '$_terms.items');
@@ -297,13 +287,16 @@ const parseAsType = {
 			if (get(child, 'schema._flags.presence') === 'required') {
 				requireds.push(key);
 			}
+
 		});
 
-		const swagger = { type: 'object' };
+		const swagger = {
+			type: 'object',
+			properties,
+		};
 		if (requireds.length) {
 			swagger.required = requireds;
 		}
-		swagger.properties = properties;
 
 		if (get(schema, '_flags.unknown') !== true) {
 			swagger.additionalProperties = false;
