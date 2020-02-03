@@ -65,20 +65,43 @@ function parseWhens (schema, existingComponents, newComponentsByRef) {
 		}
 	}
 
+	return schemaForAlternatives(alternatives, existingComponents, newComponentsByRef, mode);
+}
+
+function schemaForAlternatives (alternatives, existingComponents, newComponentsByRef, mode) {
 	let swaggers = [];
 	for (const joiSchema of alternatives) {
-		// eslint-disable-next-line max-len
 		const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
 		if (!swagger) continue; // swagger is falsy if joi.forbidden()
 		if (get(joiSchema, '_flags.presence') === 'required') {
 			swagger['x-required'] = true;
 		}
 		merge(newComponentsByRef, components || {});
+
 		swaggers.push(swagger);
 	}
 	swaggers = uniqWith(swaggers, isEqual);
 
 	return swaggers.length > 0 ? { [mode]: swaggers } : {};
+}
+
+function parseValidsAndInvalids (schema, filterFunc) {
+	const swagger = {};
+	if (schema._valids) {
+		const valids = schema._valids.values().filter(filterFunc);
+		if (get(schema, '_flags.only') && valids.length) {
+			swagger.enum = valids;
+		}
+	}
+
+	if (schema._invalids) {
+		const invalids = schema._invalids.values().filter(filterFunc);
+		if (invalids.length) {
+			swagger.not = { enum: invalids };
+		}
+	}
+
+	return swagger;
 }
 
 const parseAsType = {
@@ -115,19 +138,7 @@ const parseAsType = {
 			swagger.maximum = max.args.limit;
 		}
 
-		if (schema._valids) {
-			const valids = schema._valids.values().filter((s) => isNumber(s));
-			if (get(schema, '_flags.only') && valids.length) {
-				swagger.enum = valids;
-			}
-		}
-
-		if (schema._invalids) {
-			const invalids = schema._invalids.values().filter((s) => isNumber(s));
-			if (invalids.length) {
-				swagger.not = { enum: invalids };
-			}
-		}
+		Object.assign(swagger, parseValidsAndInvalids(schema, (s) => isNumber(s)));
 
 		return swagger;
 	},
@@ -140,7 +151,7 @@ const parseAsType = {
 		}
 
 		if (find(schema._rules, { name: 'token' })) {
-			swagger.pattern = pattern[`alphanum${getCaseSuffix(schema)}`];
+			swagger.pattern = patterns[`alphanum${getCaseSuffix(schema)}`];
 		}
 
 		if (find(schema._rules, { name: 'email' })) {
@@ -164,20 +175,7 @@ const parseAsType = {
 		}
 
 		Object.assign(swagger, getMinMax(schema));
-
-		if (schema._valids) {
-			const valids = schema._valids.values().filter((s) => isString(s));
-			if (get(schema, '_flags.only') && valids.length) {
-				swagger.enum = valids;
-			}
-		}
-
-		if (schema._invalids) {
-			const invalids = schema._invalids.values().filter((s) => isString(s));
-			if (invalids.length) {
-				swagger.not = { enum: invalids };
-			}
-		}
+		Object.assign(swagger, parseValidsAndInvalids(schema, (s) => isString(s)));
 
 		return swagger;
 	},
@@ -214,21 +212,7 @@ const parseAsType = {
 			}
 		}
 
-		let swaggers = [];
-		for (const joiSchema of alternatives) {
-			// eslint-disable-next-line max-len
-			const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
-			if (!swagger) continue; // swagger is falsy if joi.forbidden()
-			if (get(joiSchema, '_flags.presence') === 'required') {
-				swagger['x-required'] = true;
-			}
-			merge(newComponentsByRef, components || {});
-
-			swaggers.push(swagger);
-		}
-		swaggers = uniqWith(swaggers, isEqual);
-
-		return swaggers.length > 0 ? { [mode]: swaggers } : {};
+		return schemaForAlternatives(alternatives, existingComponents, newComponentsByRef, mode);
 	},
 	array: (schema, existingComponents, newComponentsByRef) => {
 		const items = get(schema, '$_terms.items');
@@ -312,19 +296,7 @@ const parseAsType = {
 			swagger.in = 'formData';
 		}
 
-		if (schema._valids) {
-			const valids = schema._valids.values().filter((s) => isString(s) || isNumber(s));
-			if (get(schema, '_flags.only') && valids.length) {
-				swagger.enum = valids;
-			}
-		}
-
-		if (schema._invalids) {
-			const invalids = schema._invalids.values().filter((s) => isString(s) || isNumber(s));
-			if (invalids.length) {
-				swagger.not = { enum: invalids };
-			}
-		}
+		Object.assign(swagger, parseValidsAndInvalids(schema, (s) => isString(s) || isNumber(s)));
 
 		return swagger;
 	},
