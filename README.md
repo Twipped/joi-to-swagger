@@ -52,9 +52,16 @@ joi.object().keys({
 ## Usage
 
 ```js
-var j2s = require('joi-to-swagger');
+const j2s = require('joi-to-swagger');
 
-var {swagger, components} = j2s(mySchema, existingComponents);
+const { swagger, components } = j2s(mySchema, existingComponents);
+```
+
+_- in case of ES6 module syntax:_
+```js
+import j2s from 'joi-to-swagger';
+
+const { swagger, components } = j2s(mySchema, existingComponents);
 ```
 
 J2S takes two arguments, the first being the Joi object you wish to convert. The second optional argument is a collection of existing components to reference against for the meta `className` identifiers (see below).
@@ -67,7 +74,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
   - `.unknown(false)` -> `additionalProperties: false`
   - `.required()` on object members produces a `"required": []` array
 
-- `joi.array().items()` defines the structure using the first schema provided on `.items()` (see below for how to override)
+- `joi.array().items()` - in case of multiple provided schemas using `items()` method, the "oneOf" (OAS3) keyword is used
   - `.min(4)` -> `"minItems": 4`
   - `.max(10)` -> `"maxItems": 10`
   - `.unique(truthy)` -> `"uniqueItems": true`
@@ -81,6 +88,8 @@ J2S returns a result object containing `swagger` and `components` properties. `s
   - `.max(10)` -> `"maximum": 10`
   - `.positive()` -> `"minimum": 1`
   - `.negative()` -> `"maximum": -1`
+  - `.valid(1, 2)` -> `"enum": [1, 2]`
+  - `.invalid(1, 2)` -> `"not": { "enum": [1, 2] }`
 
 - `joi.string()` produces `"type": "string"` with no formatting
   - `.strict().only('A', 'B', 1)` -> `"enum": ["A", "B"]` (note that non-strings are omitted due to swagger type constraints)
@@ -96,6 +105,9 @@ J2S returns a result object containing `swagger` and `components` properties. `s
   - `.allow(null)` -> `"nullable": true`
   - `.min(5)` -> `"minLength": 5`
   - `.max(10)` -> `"maxLength": 10`
+  - `.uuid()` -> `"format": "uuid"`
+  - `.valid('A', 'B')` -> `"enum": ['A', 'B']`
+  - `.invalid('A', 'B')` -> `"not": { "enum": ['A', 'B'] }`
 
 - `joi.binary()` produces `"type": "string"` with a format of `"binary"`.
   - `.encoding('base64')` -> `"format": "byte"`
@@ -106,7 +118,13 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 - `joi.date()` produces `"type": "string"` with a format of `"date-time"`.
   - `.allow(null)` -> `"nullable": true`
 
-- `joi.alternatives()` defines the structure using the first schema provided on `.items()` (see below for how to override)
+- `joi.alternatives()` - structure of alternative schemas is defined by "anyOf", "oneOf" or "allOf (OAS3) keywords
+  - `.mode('one')` -> produces `"oneOf": [ { ... } ]`
+  - in case of `joi.required()` alternative schema, the custom property option "x-required" is added to subschema -> `"x-required": true`
+
+- `joi.when()` conditions are transformed to `"oneOf": [ { ... }, { ... } ]` keyword
+  - if multiple `joi.when().when()` conditions are provided, they are transformed to `"anyOf": [ { ... }, { ... } ]` keyword
+  - in case of `joi.required()` condition, the custom property option "x-required" is added to subschema -> `"x-required": true`
 
 - `any.default()` sets the `"default"` detail.
 
@@ -115,7 +133,10 @@ J2S returns a result object containing `swagger` and `components` properties. `s
   - joi < v14: `.example('hi').example('hey')` -> `"examples": ["hi", "hey"]`
   - joi v14: `.example('hi', 'hey')` -> `"examples": ["hi", "hey"]`
 
-- `joi.any().meta({ swaggerType: 'file' }).description('simpleFile')` add a file to the swagger structure
+- `joi.any()`
+- `.meta({ swaggerType: 'file' }).description('simpleFile')` add a file to the swagger structure
+- `.valid(1, 'A')` -> `"enum": [1, 'A']`
+- `.invalid(1, 'A')` -> `"not": { "enum": [1, 'A'] }`
 
 ## Meta Overrides
 
@@ -124,8 +145,6 @@ The following may be provided on a joi `.meta()` object to explicitly override d
 **className**: By default J2S will be full verbose in its components. If an object has a `className` string, J2S will look for an existing schema component with that name, and if a component does not exist then it will create one. Either way, it will produce a `$ref` element for that schema component. If a new component is created it will be returned with the swagger schema.
 
 **classTarget**: Named components are assumed to be schemas, and are referenced as `components/schemas/ComponentName`. If a `classTarget` meta value is provided (such as `parameters`), this will replace schemas in the reference.
-
-**swaggerIndex**: Swagger's deterministic design disallows for supporting multiple type components. Because of this, only a single schema from `.alternatives()` and `.array().items()` may be converted to swagger. By default J2S will use the first component. Defining a different zero based index for this meta tag will override that behavior.
 
 **swagger**: To explicitly define your own swagger component for a joi schema object, place that swagger object in the `swagger` meta tag. It will be mixed in to the schema that J2S produces.
 
@@ -139,7 +158,7 @@ For supporting custom joi types you can add the needed type information using a 
 
 ```js
 const customJoi = joi.extend({
-    name: 'customStringType',
+    type: 'customStringType',
     base: joi.string().meta({ baseType: 'string' }),
     // ...
 });

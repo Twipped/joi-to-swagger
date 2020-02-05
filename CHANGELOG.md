@@ -4,6 +4,13 @@
   * BREAKING CHANGE: Move joi to @hapi/joi package with version > 16.0 which was a major rewrite
   * BREAKING CHANGE: Instead of use joi.object().unknown(false) to disallow additional properties
       this is the default now. To allow additional properties use joi.object().unknown()
+  * BREAKING CHANGE: removed support for "swaggerIndex", because it is no longer needed due to added support of "oneOf, anyOf, allOf" keywords
+  * add support for OAS3 "oneOf, anyOf, allOf and not" keywords
+    - this functionality is reflected in the processing of `joi.when()` conditions, `joi.alternatives()` and `joi.array().items()`
+  * add support for "switch" condition - `joi.when('x', { is: true, switch: { ... } })`
+  * add support for "invalid" method - `joi.string().invalid('A','B','C')`
+  * add add support for "uuid" format for string type
+  * add support for ES6 default import syntax
 
 3.3.0 / 2019-10-18
 ==================

@@ -1,7 +1,7 @@
 'use strict';
 
 const joi = require('@hapi/joi');
-const { find, get, set, merge } = require('lodash');
+const { find, get, isEqual, isNumber, isPlainObject, isString, merge, set, uniqWith } = require('lodash');
 
 const patterns = {
 	alphanum: '^[a-zA-Z0-9]*$',
@@ -49,6 +49,38 @@ function getCaseSuffix (schema) {
 	return '';
 }
 
+function parseWhens (schema, existingComponents, newComponentsByRef) {
+	const whens = get(schema, '$_terms.whens');
+	const mode = whens.length > 1 ? 'anyOf' : 'oneOf';
+
+	const alternatives = [];
+	for (const w of whens) {
+		if (w.then) alternatives.push(w.then);
+		if (w.otherwise) alternatives.push(w.otherwise);
+		if (w.switch) {
+			for (const s of w.switch) {
+				if (s.then) alternatives.push(s.then);
+				if (s.otherwise) alternatives.push(s.otherwise);
+			}
+		}
+	}
+
+	let swaggers = [];
+	for (const joiSchema of alternatives) {
+		// eslint-disable-next-line max-len
+		const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
+		if (!swagger) continue; // swagger is falsy if joi.forbidden()
+		if (get(joiSchema, '_flags.presence') === 'required') {
+			swagger['x-required'] = true;
+		}
+		merge(newComponentsByRef, components || {});
+		swaggers.push(swagger);
+	}
+	swaggers = uniqWith(swaggers, isEqual);
+
+	return swaggers.length > 0 ? { [mode]: swaggers } : {};
+}
+
 const parseAsType = {
 	number: (schema) => {
 		const swagger = {};
@@ -84,9 +116,16 @@ const parseAsType = {
 		}
 
 		if (schema._valids) {
-			const valids = schema._valids.values().filter((s) => typeof s === 'number');
+			const valids = schema._valids.values().filter((s) => isNumber(s));
 			if (get(schema, '_flags.only') && valids.length) {
 				swagger.enum = valids;
+			}
+		}
+
+		if (schema._invalids) {
+			const invalids = schema._invalids.values().filter((s) => isNumber(s));
+			if (invalids.length) {
+				swagger.not = { enum: invalids };
 			}
 		}
 
@@ -127,9 +166,16 @@ const parseAsType = {
 		Object.assign(swagger, getMinMax(schema));
 
 		if (schema._valids) {
-			const valids = schema._valids.values().filter((s) => typeof s === 'string');
+			const valids = schema._valids.values().filter((s) => isString(s));
 			if (get(schema, '_flags.only') && valids.length) {
 				swagger.enum = valids;
+			}
+		}
+
+		if (schema._invalids) {
+			const invalids = schema._invalids.values().filter((s) => isString(s));
+			if (invalids.length) {
+				swagger.not = { enum: invalids };
 			}
 		}
 
@@ -149,53 +195,74 @@ const parseAsType = {
 	date: (/* schema */) => ({ type: 'string', format: 'date-time' }),
 	boolean: (/* schema */) => ({ type: 'boolean' }),
 	alternatives: (schema, existingComponents, newComponentsByRef) => {
-		const index = meta(schema, 'swaggerIndex') || 0;
+		const matches = get(schema, '$_terms.matches');
+		const mode = `${get(schema, '_flags.match') || 'any'}Of`;
 
-		const matches = get(schema, [ '$_terms', 'matches' ]);
-		const firstItem = get(matches, [ 0 ]);
-
-		let itemsSchema;
-		if (firstItem.ref) {
-			if (schema._baseType && !firstItem.otherwise) {
-				itemsSchema = index ? firstItem.then : schema._baseType;
+		const alternatives = [];
+		for (const m of matches) {
+			if (m.ref) {
+				if (m.then) alternatives.push(m.then);
+				if (m.otherwise) alternatives.push(m.otherwise);
+				if (m.switch) {
+					for (const s of m.switch) {
+						if (s.then) alternatives.push(s.then);
+						if (s.otherwise) alternatives.push(s.otherwise);
+					}
+				}
 			} else {
-				itemsSchema = index ? firstItem.otherwise : firstItem.then;
+				alternatives.push(m.schema);
 			}
-		} else if (index) {
-			itemsSchema = get(matches, [ index, 'schema' ]);
-		} else {
-			itemsSchema = firstItem.schema;
 		}
 
-		const items = parse(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
-		if (get(itemsSchema, '_flags.presence') === 'required') {
-			items.swagger.__required = true;
+		let swaggers = [];
+		for (const joiSchema of alternatives) {
+			// eslint-disable-next-line max-len
+			const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
+			if (!swagger) continue; // swagger is falsy if joi.forbidden()
+			if (get(joiSchema, '_flags.presence') === 'required') {
+				swagger['x-required'] = true;
+			}
+			merge(newComponentsByRef, components || {});
+
+			swaggers.push(swagger);
 		}
+		swaggers = uniqWith(swaggers, isEqual);
 
-		merge(newComponentsByRef, items.components || {});
-
-		return items.swagger;
+		return swaggers.length > 0 ? { [mode]: swaggers } : {};
 	},
 	array: (schema, existingComponents, newComponentsByRef) => {
-		const index = meta(schema, 'swaggerIndex') || 0;
-		const itemsSchema = get(schema, [ '$_terms', 'items', index ]);
+		const items = get(schema, '$_terms.items');
+		const mode = 'oneOf';
 
-		if (!itemsSchema) throw Error('Array schema does not define an items schema at index ' + index);
+		const alternatives = items;
 
-		const items = parse(itemsSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
+		let swaggers = [];
+		for (const joiSchema of alternatives) {
+			// eslint-disable-next-line max-len
+			const { swagger, components } = parse(joiSchema, merge({}, existingComponents || {}, newComponentsByRef || {}));
+			if (!swagger) continue; // swagger is falsy if joi.forbidden()
 
-		merge(newComponentsByRef, items.components || {});
+			merge(newComponentsByRef, components || {});
 
-		const swagger = { type: 'array' };
+			swaggers.push(swagger);
+		}
+		swaggers = uniqWith(swaggers, isEqual);
 
-		Object.assign(swagger, getMinMax(schema, 'Items'));
-
-		if (find(schema._rules, { name: 'unique' })) {
-			swagger.uniqueItems = true;
+		const openapi = {
+			type: 'array',
+			items: { [mode]: swaggers },
+		};
+		if (swaggers.length <= 1) {
+			openapi.items = get(swaggers, [ 0 ]) || {};
 		}
 
-		swagger.items = items.swagger;
-		return swagger;
+		Object.assign(openapi, getMinMax(schema, 'Items'));
+
+		if (find(schema._rules, { name: 'unique' })) {
+			openapi.uniqueItems = true;
+		}
+
+		return openapi;
 	},
 	object: (schema, existingComponents, newComponentsByRef) => {
 
@@ -207,27 +274,29 @@ const parseAsType = {
 		const children = get(schema, '$_terms.keys') || [];
 		children.forEach((child) => {
 			const key = child.key;
-			const prop = parse(child.schema, combinedComponents);
-			if (!prop.swagger) { // swagger is falsy if joi.forbidden()
+			const { swagger, components } = parse(child.schema, combinedComponents);
+			if (!swagger) { // swagger is falsy if joi.forbidden()
 				return;
 			}
 
-			merge(newComponentsByRef, prop.components || {});
-			merge(combinedComponents, prop.components || {});
+			merge(newComponentsByRef, components || {});
+			merge(combinedComponents, components || {});
 
-			properties[key] = prop.swagger;
+			properties[key] = swagger;
 
-			if (get(child, 'schema._flags.presence') === 'required' || prop.swagger.__required) {
+			if (get(child, 'schema._flags.presence') === 'required') {
 				requireds.push(key);
-				delete prop.swagger.__required;
 			}
+
 		});
 
-		const swagger = { type: 'object' };
+		const swagger = {
+			type: 'object',
+			properties,
+		};
 		if (requireds.length) {
 			swagger.required = requireds;
 		}
-		swagger.properties = properties;
 
 		if (get(schema, '_flags.unknown') !== true) {
 			swagger.additionalProperties = false;
@@ -242,6 +311,21 @@ const parseAsType = {
 			swagger.type = 'file';
 			swagger.in = 'formData';
 		}
+
+		if (schema._valids) {
+			const valids = schema._valids.values().filter((s) => isString(s) || isNumber(s));
+			if (get(schema, '_flags.only') && valids.length) {
+				swagger.enum = valids;
+			}
+		}
+
+		if (schema._invalids) {
+			const invalids = schema._invalids.values().filter((s) => isString(s) || isNumber(s));
+			if (invalids.length) {
+				swagger.not = { enum: invalids };
+			}
+		}
+
 		return swagger;
 	},
 };
@@ -251,11 +335,11 @@ function parse (schema, existingComponents) {
 
 	if (!schema) throw new Error('No schema was passed.');
 
-	if (typeof schema === 'object' && !joi.isSchema(schema)) {
+	if (isPlainObject(schema)) {
 		schema = joi.object().keys(schema);
 	}
 
-	if (!schema.type || !schema.$_root) throw new TypeError('Passed schema does not appear to be a joi schema.');
+	if (!joi.isSchema(schema)) throw new TypeError('Passed schema does not appear to be a joi schema.');
 
 	const flattenMeta = Object.assign.apply(null, [ {} ].concat(schema.$_terms.metas));
 
@@ -285,7 +369,10 @@ function parse (schema, existingComponents) {
 	}
 
 	const components = {};
-	const swagger = parseAsType[type](schema, existingComponents, components);
+	const swagger =  parseAsType[type](schema, existingComponents, components);
+	if (get(schema, '$_terms.whens')) {
+		Object.assign(swagger, parseWhens(schema, existingComponents, components));
+	}
 
 	if (!swagger) return { swagger, components };
 
@@ -333,5 +420,5 @@ exports.default = parse;
 
 // const inspectU = require('util').inspect;
 // function inspect (value) {
-// 		console.error(inspectU(value, { colors: true, depth: 10 }));
+// 	console.error(inspectU(value, { colors: true, depth: 10 }));
 // }
