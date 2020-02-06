@@ -21,7 +21,23 @@ suite('swagger converts', (s) => {
 		});
 	}
 
+	function testError (...args) {
+		let input, expectedError, only, description;
+		i++;
+		if (typeof args[0] === 'string') {
+			[ description, input, expectedError, only ] = args;
+		} else {
+			[ input, expectedError, only ] = args;
+			description = 'Set ' + i;
+		}
+		s[only ? 'only' : 'test'](description, (t) => {
+			t.throws(() => parser(input), expectedError, `${description}: expected error was thrown`);
+			t.end();
+		});
+	}
+
 	simpleTest(
+		'integer with min and max',
 		joi.number().integer().min(1).max(10),
 		{
 			type: 'integer',
@@ -31,6 +47,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'positive number',
 		joi.number().positive(),
 		{
 			type: 'number',
@@ -40,6 +57,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'negative number with precision',
 		joi.number().precision(2).negative(),
 		{
 			type: 'number',
@@ -49,6 +67,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string',
 		joi.string(),
 		{
 			type: 'string',
@@ -56,6 +75,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with label',
 		joi.string().label('test'),
 		{
 			type: 'string',
@@ -64,6 +84,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with regex',
 		joi.string().regex(/^A$/),
 		{
 			type: 'string',
@@ -72,6 +93,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with min and max',
 		joi.string().min(4).max(9),
 		{
 			type: 'string',
@@ -81,6 +103,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with min, max and length',
 		joi.string().min(4).max(9).length(14),
 		{
 			type: 'string',
@@ -90,6 +113,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with max, length and min',
 		joi.string().max(9).length(14).min(4),
 		{
 			type: 'string',
@@ -99,6 +123,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with alphanum',
 		joi.string().alphanum(),
 		{
 			type: 'string',
@@ -107,6 +132,16 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with alphanum and strict',
+		joi.string().strict().alphanum(),
+		{
+			type: 'string',
+			pattern: '^[a-zA-Z0-9]*$',
+		},
+	);
+
+	simpleTest(
+		'string with alphanum and lowercase',
 		joi.string().strict().alphanum().lowercase(),
 		{
 			type: 'string',
@@ -115,6 +150,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with alphanum and uppercase (without strict)',
 		// confirm that non-strict mode enables insensitive match
 		joi.string().alphanum().uppercase(),
 		{
@@ -124,6 +160,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with strict, alphanum and uppercase',
 		joi.string().strict().alphanum().uppercase(),
 		{
 			type: 'string',
@@ -132,6 +169,16 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with token',
+		joi.string().token(),
+		{
+			type: 'string',
+			pattern: '^[a-zA-Z0-9_]*$',
+		},
+	);
+
+	simpleTest(
+		'string with alphanum and email',
 		joi.string().alphanum().email(),
 		{
 			type: 'string',
@@ -140,6 +187,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with alphanum and isoDate',
 		joi.string().alphanum().isoDate(),
 		{
 			type: 'string',
@@ -148,6 +196,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with valid',
 		joi.string().valid('A', 'B', 'C', null),
 		{
 			type: 'string',
@@ -157,6 +206,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with invalid',
 		joi.string().invalid('A', 'B', 'C'),
 		{
 			type: 'string',
@@ -167,6 +217,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with uuid',
 		joi.string().uuid(),
 		{
 			type: 'string',
@@ -175,6 +226,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'boolean',
 		joi.boolean(),
 		{
 			type: 'boolean',
@@ -182,6 +234,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'boolean with allow null',
 		joi.boolean().allow(null),
 		{
 			type: 'boolean',
@@ -190,6 +243,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'binary',
 		joi.binary(),
 		{
 			type: 'string',
@@ -198,6 +252,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'binary with base64 encoding',
 		joi.binary().encoding('base64'),
 		{
 			type: 'string',
@@ -206,6 +261,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'array with items of boolean and date',
 		joi.array().items(joi.boolean(), joi.date()),
 		{
 			type: 'array',
@@ -224,6 +280,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'array with items unique strings',
 		joi.array().items(joi.string()).unique(),
 		{
 			type: 'array',
@@ -233,6 +290,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'array with min and max and items of strings and numbers',
 		joi.array().items(joi.string(), joi.number()).min(1).max(5),
 		{
 			type: 'array',
@@ -253,6 +311,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'alternatives of string or number',
 		joi.alternatives(joi.string(), joi.number()),
 		{
 			anyOf: [
@@ -268,6 +327,41 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'alternatives of objects with match all',
+		joi.alternatives().try(
+			joi.object({
+				a: joi.string(),
+			}),
+			joi.object({
+				d: joi.number().integer(),
+			}),
+		).match('all'),
+		{
+			allOf: [
+				{
+					type: 'object',
+					properties: {
+						a: {
+							type: 'string',
+						},
+					},
+					additionalProperties: false,
+				},
+				{
+					type: 'object',
+					properties: {
+						d: {
+							type: 'integer',
+						},
+					},
+					additionalProperties: false,
+				},
+			],
+		},
+	);
+
+	simpleTest(
+		'alternatives of different objects with match one',
 		joi.alternatives(
 			joi.object({
 				a: joi.string().invalid('A', 'B', 'C').required(),
@@ -277,7 +371,6 @@ suite('swagger converts', (s) => {
 				c: joi.string().invalid('E', 'F', 'G'),
 				d: joi.number().integer().valid(4, 5, 6).required(),
 			})
-
 		).match('one'),
 		{
 			oneOf: [
@@ -319,8 +412,8 @@ suite('swagger converts', (s) => {
 		}
 	);
 
-	// TODO -> any
 	simpleTest(
+		'when with then and otherwise',
 		joi.when('myRequiredField', {
 			is: true,
 			then: joi.string(),
@@ -340,6 +433,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with any using when with valid',
 		{
 			a: joi.any()
 				.when('b', {
@@ -383,6 +477,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with when on numbers',
 		joi.object({
 			a: joi.number().required(),
 			b: joi.number().integer()
@@ -418,6 +513,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with forbidden properties and when',
 		joi.object({
 			req: joi.string().required(),
 			forbiddenAny: joi.forbidden(),
@@ -449,6 +545,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with unknown and required property',
 		joi.object().keys({
 			id: joi.number().integer().required(),
 			name: joi.string(),
@@ -464,6 +561,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with nested object with unknown',
 		joi.object().keys({
 			name: joi.string(),
 			settings: joi.object().unknown(),
@@ -482,6 +580,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with a property with default',
 		joi.object().keys({
 			value: joi.string().default('hello'),
 		}),
@@ -495,6 +594,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'creating a reference by using meta className',
 		joi.string().alphanum().email().meta({ className: 'Email' }),
 		{
 			$ref: '#/components/schemas/Email',
@@ -510,6 +610,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with example',
 		joi.string().example('sii'),
 		{
 			example: 'sii',
@@ -518,6 +619,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with multiple examples',
 		joi.string().example('sel').example('wyn'),
 		{
 			examples: [ 'sel', 'wyn' ],
@@ -526,6 +628,31 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'any',
+		joi.any(),
+		{},
+	);
+
+	simpleTest(
+		'any with valid',
+		joi.any().valid(1, 'a'),
+		{
+			enum: [ 1, 'a' ],
+		},
+	);
+
+	simpleTest(
+		'any with invalid',
+		joi.any().invalid(1, 'a'),
+		{
+			not: {
+				enum: [ 1, 'a' ],
+			},
+		},
+	);
+
+	simpleTest(
+		'object with properties using meta className to create references',
 		{
 			start: joi.object().keys({
 				lat:  joi.number().min(-90).max(90).required(),
@@ -570,6 +697,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'creating a reference with className and classTarget',
 		{
 			body: joi.object().keys({
 				subject: joi.string(),
@@ -604,6 +732,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'conditionally required field',
 		{
 			id: joi.string()
 				.when('version', { is: joi.number().greater(0).required(), then: joi.required() }),
@@ -624,6 +753,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with forbidden field',
 		{
 			id: joi.string()
 				.description('user id')
@@ -637,6 +767,7 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'date with default',
 		joi.date().default(Date.now),
 		{
 			type: 'string',
@@ -644,8 +775,28 @@ suite('swagger converts', (s) => {
 		}
 	);
 
+	// custom swagger schemas with swagger and swaggerOverride
+	simpleTest(
+		'using meta swagger',
+		joi.date().default(Date.now).meta({ swagger: { customProperty: 'test' } }),
+		{
+			type: 'string',
+			format: 'date-time',
+			customProperty: 'test',
+		}
+	);
+
+	simpleTest(
+		'using meta swagger and swaggerOverride',
+		joi.date().default(Date.now).meta({ swagger: { customProperty: 'test' }, swaggerOverride: true }),
+		{
+			customProperty: 'test',
+		}
+	);
+
 	// test files
 	simpleTest(
+		'using meta swaggerType file',
 		joi.any().meta({ swaggerType: 'file' }).description('simpleFile'),
 		{
 			description: 'simpleFile',
@@ -656,6 +807,7 @@ suite('swagger converts', (s) => {
 
 	// extend test
 	simpleTest(
+		'customType with extend',
 		(
 			() => {
 				const customJoi = joi.extend({
@@ -681,5 +833,27 @@ suite('swagger converts', (s) => {
 			},
 			additionalProperties: false,
 		}
+	);
+
+	testError(
+		'invalid baseType',
+		(
+			() => {
+				const customJoi = joi.extend({
+					type: 'customStringType',
+					base: joi.string().meta({ baseType: 'string' }),
+				});
+
+				return customJoi.extend({
+					type: 'customObjectType',
+					base: customJoi.object({
+						property1: customJoi.customStringType().required(),
+					}).meta({
+						baseType: 'myInvalidType',
+					}),
+				}).customObjectType();
+			}
+		)(),
+		new TypeError('myInvalidType is not a recognized Joi type.'),
 	);
 });

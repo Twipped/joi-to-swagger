@@ -6,6 +6,7 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "tap tests.js",
+    "test:debug": "tap --node-arg=--inspect --no-timeout tests.js",
     "test:travis": "tap --reporter=tap tests.js",
     "lint": "eslint ./"
   },
@@ -31,12 +32,12 @@
     "eslint-config-twipped": "~3.3.0",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "@hapi/joi": "^16.1.7",
+    "@hapi/joi": "^17.1.0",
     "tap": "^14.7.2",
     "tapsuite": "^2.0.1"
   },
   "peerDependencies": {
-    "@hapi/joi": "*"
+    "@hapi/joi": ">=16"
   },
   "files": [
     "index.js",

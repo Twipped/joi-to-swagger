@@ -11,6 +11,7 @@
   * add support for "invalid" method - `joi.string().invalid('A','B','C')`
   * add add support for "uuid" format for string type
   * add support for ES6 default import syntax
+  * fix string token pattern
 
 3.3.0 / 2019-10-18
 ==================

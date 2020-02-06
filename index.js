@@ -7,6 +7,7 @@ const patterns = {
 	alphanum: '^[a-zA-Z0-9]*$',
 	alphanumLower: '^[a-z0-9]*$',
 	alphanumUpper: '^[A-Z0-9]*$',
+	token: '^[a-zA-Z0-9_]*$',
 };
 
 function meta (schema, key) {
@@ -151,7 +152,7 @@ const parseAsType = {
 		}
 
 		if (find(schema._rules, { name: 'token' })) {
-			swagger.pattern = patterns[`alphanum${getCaseSuffix(schema)}`];
+			swagger.pattern = patterns.token;
 		}
 
 		if (find(schema._rules, { name: 'email' })) {
@@ -329,7 +330,6 @@ function parse (schema, existingComponents) {
 		return { swagger: refDef(metaDefType, metaDefName) };
 	}
 
-	// TODO: test forbidden
 	if (get(schema, '_flags.presence') === 'forbidden') {
 		return false;
 	}
