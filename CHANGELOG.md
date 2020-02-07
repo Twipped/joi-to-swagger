@@ -1,4 +1,4 @@
-4.0.0 / 2019-10-19
+4.0.0 / 2020-02-07
 ==================
 
   * BREAKING CHANGE: Move joi to @hapi/joi package with version > 16.0 which was a major rewrite
