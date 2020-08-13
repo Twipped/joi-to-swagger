@@ -1,3 +1,9 @@
+5.0.1 / 2020-08-13
+==================
+
+  * Remove node 8 (and node 10) support because joi removed it with version 17 as well
+    (releasing only as patch an hour after 5.0.0)
+
 5.0.0 / 2020-08-13
 ==================
 

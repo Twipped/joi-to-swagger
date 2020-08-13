@@ -1,9 +1,9 @@
 sudo: false
 language: node_js
 node_js:
+  - "node"
   - v12
   - v10
-  - v8
 install:
   - npm i -g npm@latest
   - npm ci
