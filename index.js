@@ -1,6 +1,6 @@
 'use strict';
 
-const joi = require('@hapi/joi');
+const joi = require('joi');
 const { find, get, isEqual, isNumber, isPlainObject, isString, merge, set, uniqWith } = require('lodash');
 
 const patterns = {

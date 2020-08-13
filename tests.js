@@ -1,6 +1,6 @@
 const suite = require('tapsuite');
 const parser = require('./');
-const joi = require('@hapi/joi');
+const joi = require('joi');
 
 suite('swagger converts', (s) => {
 	let i = 0;
@@ -213,7 +213,7 @@ suite('swagger converts', (s) => {
 			not: {
 				enum: [ 'A', 'B', 'C' ],
 			},
-		}
+		},
 	);
 
 	simpleTest(
@@ -222,7 +222,7 @@ suite('swagger converts', (s) => {
 		{
 			type: 'string',
 			format: 'uuid',
-		}
+		},
 	);
 
 	simpleTest(
@@ -230,7 +230,7 @@ suite('swagger converts', (s) => {
 		joi.boolean(),
 		{
 			type: 'boolean',
-		}
+		},
 	);
 
 	simpleTest(
@@ -239,7 +239,7 @@ suite('swagger converts', (s) => {
 		{
 			type: 'boolean',
 			nullable: true,
-		}
+		},
 	);
 
 	simpleTest(
@@ -248,7 +248,7 @@ suite('swagger converts', (s) => {
 		{
 			type: 'string',
 			format: 'binary',
-		}
+		},
 	);
 
 	simpleTest(
@@ -257,7 +257,7 @@ suite('swagger converts', (s) => {
 		{
 			type: 'string',
 			format: 'byte',
-		}
+		},
 	);
 
 	simpleTest(
@@ -276,7 +276,7 @@ suite('swagger converts', (s) => {
 					},
 				],
 			},
-		}
+		},
 	);
 
 	simpleTest(
@@ -286,7 +286,7 @@ suite('swagger converts', (s) => {
 			type: 'array',
 			uniqueItems: true,
 			items: { type: 'string' },
-		}
+		},
 	);
 
 	simpleTest(
@@ -307,7 +307,7 @@ suite('swagger converts', (s) => {
 			},
 			minItems: 1,
 			maxItems: 5,
-		}
+		},
 	);
 
 	simpleTest(
@@ -323,7 +323,7 @@ suite('swagger converts', (s) => {
 					format: 'float',
 				},
 			],
-		}
+		},
 	);
 
 	simpleTest(
@@ -370,7 +370,7 @@ suite('swagger converts', (s) => {
 			joi.object({
 				c: joi.string().invalid('E', 'F', 'G'),
 				d: joi.number().integer().valid(4, 5, 6).required(),
-			})
+			}),
 		).match('one'),
 		{
 			oneOf: [
@@ -409,7 +409,72 @@ suite('swagger converts', (s) => {
 					additionalProperties: false,
 				},
 			],
-		}
+		},
+	);
+
+	simpleTest(
+		'alternatives with conditional',
+		{
+			a: joi.alternatives().conditional('b', { is: 5, then: joi.string(), otherwise: joi.number() }),
+			b: joi.number().integer(),
+		},
+		{
+			type: 'object',
+			properties: {
+				a: {
+					anyOf: [
+						{
+							type: 'string',
+						},
+						{
+							type: 'number',
+							format: 'float',
+						},
+					],
+				},
+				b: {
+					type: 'integer',
+				},
+			},
+			additionalProperties: false,
+		},
+	);
+
+	simpleTest(
+		'alternatives with conditional using switch',
+		{
+			a: joi.alternatives().conditional('b', {
+				switch: [
+					{ is: 5, then: joi.string() },
+					{ is: 6, then: joi.number() },
+				],
+				otherwise: joi.number().integer(),
+			}),
+			b: joi.number().integer(),
+		},
+		{
+			type: 'object',
+			properties: {
+				a: {
+					anyOf: [
+						{
+							type: 'string',
+						},
+						{
+							type: 'number',
+							format: 'float',
+						},
+						{
+							type: 'integer',
+						},
+					],
+				},
+				b: {
+					type: 'integer',
+				},
+			},
+			additionalProperties: false,
+		},
 	);
 
 	simpleTest(
@@ -429,7 +494,7 @@ suite('swagger converts', (s) => {
 					format: 'float',
 				},
 			],
-		}
+		},
 	);
 
 	simpleTest(
@@ -473,7 +538,7 @@ suite('swagger converts', (s) => {
 				},
 			},
 			additionalProperties: false,
-		}
+		},
 	);
 
 	simpleTest(
@@ -509,7 +574,7 @@ suite('swagger converts', (s) => {
 				},
 			},
 			additionalProperties: false,
-		}
+		},
 	);
 
 	simpleTest(
@@ -541,7 +606,7 @@ suite('swagger converts', (s) => {
 				},
 			},
 			additionalProperties: false,
-		}
+		},
 	);
 
 	simpleTest(
@@ -557,7 +622,7 @@ suite('swagger converts', (s) => {
 				id: { type: 'integer' },
 				name: { type: 'string' },
 			},
-		}
+		},
 	);
 
 	simpleTest(
@@ -590,7 +655,7 @@ suite('swagger converts', (s) => {
 				value: { type: 'string', default: 'hello' },
 			},
 			additionalProperties: false,
-		}
+		},
 	);
 
 	simpleTest(
@@ -606,7 +671,7 @@ suite('swagger converts', (s) => {
 					format: 'email',
 				},
 			},
-		}
+		},
 	);
 
 	simpleTest(
@@ -615,7 +680,7 @@ suite('swagger converts', (s) => {
 		{
 			example: 'sii',
 			type: 'string',
-		}
+		},
 	);
 
 	simpleTest(
@@ -624,7 +689,7 @@ suite('swagger converts', (s) => {
 		{
 			examples: [ 'sel', 'wyn' ],
 			type: 'string',
-		}
+		},
 	);
 
 	simpleTest(
@@ -693,7 +758,7 @@ suite('swagger converts', (s) => {
 					additionalProperties: false,
 				},
 			},
-		}
+		},
 	);
 
 	simpleTest(
@@ -728,7 +793,7 @@ suite('swagger converts', (s) => {
 					},
 				},
 			},
-		}
+		},
 	);
 
 	simpleTest(
@@ -749,7 +814,7 @@ suite('swagger converts', (s) => {
 				},
 			},
 			additionalProperties: false,
-		}
+		},
 	);
 
 	simpleTest(
@@ -763,7 +828,7 @@ suite('swagger converts', (s) => {
 			type: 'object',
 			properties: {},
 			additionalProperties: false,
-		}
+		},
 	);
 
 	simpleTest(
@@ -772,7 +837,7 @@ suite('swagger converts', (s) => {
 		{
 			type: 'string',
 			format: 'date-time',
-		}
+		},
 	);
 
 	// custom swagger schemas with swagger and swaggerOverride
@@ -783,7 +848,7 @@ suite('swagger converts', (s) => {
 			type: 'string',
 			format: 'date-time',
 			customProperty: 'test',
-		}
+		},
 	);
 
 	simpleTest(
@@ -791,7 +856,7 @@ suite('swagger converts', (s) => {
 		joi.date().default(Date.now).meta({ swagger: { customProperty: 'test' }, swaggerOverride: true }),
 		{
 			customProperty: 'test',
-		}
+		},
 	);
 
 	// test files
@@ -802,7 +867,7 @@ suite('swagger converts', (s) => {
 			description: 'simpleFile',
 			in: 'formData',
 			type: 'file',
-		}
+		},
 	);
 
 	// extend test
@@ -832,8 +897,10 @@ suite('swagger converts', (s) => {
 				property1: { type: 'string' },
 			},
 			additionalProperties: false,
-		}
+		},
 	);
+
+	testError('missing schema', undefined, new Error('No schema was passed.'));
 
 	testError(
 		'invalid baseType',

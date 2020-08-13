@@ -1,3 +1,9 @@
+5.0.0 / 2020-08-13
+==================
+
+  * BREAKING CHANGE: Move back to joi with versions >= 17.1.1 after @hapi/joi was deprecated
+  * updated dependencies
+
 4.0.0 / 2020-02-07
 ==================
 
