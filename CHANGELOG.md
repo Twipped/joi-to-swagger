@@ -3,6 +3,11 @@
 
   * Add option to override the Joi schema which generates swagger.
 
+5.1.0 / 2020-10-17
+==================
+
+  * Fix boolean false default value not working (thanks @nelsongomes)
+
 5.0.1 / 2020-08-13
 ==================
 
