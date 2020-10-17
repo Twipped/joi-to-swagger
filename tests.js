@@ -234,6 +234,24 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'boolean with default true',
+		joi.boolean().default(true),
+		{
+			type: 'boolean',
+			default: true,
+		},
+	);
+
+	simpleTest(
+		'boolean with default false',
+		joi.boolean().default(false),
+		{
+			type: 'boolean',
+			default: false,
+		},
+	);
+
+	simpleTest(
 		'boolean with allow null',
 		joi.boolean().allow(null),
 		{

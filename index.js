@@ -371,7 +371,7 @@ function parse (schema, existingComponents) {
 	}
 
 	const defaultValue = get(schema, '_flags.default');
-	if (defaultValue && typeof defaultValue !== 'function') {
+	if ((defaultValue || typeof defaultValue === 'boolean') && typeof defaultValue !== 'function') {
 		swagger.default = defaultValue;
 	}
 
