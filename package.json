@@ -1,6 +1,6 @@
 {
   "name": "joi-to-swagger",
-  "version": "5.0.1",
+  "version": "5.2.0",
   "description": "",
   "main": "index.js",
   "types": "index.d.ts",

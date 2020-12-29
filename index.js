@@ -303,7 +303,7 @@ const parseAsType = {
 	},
 };
 
-function parse (schema, existingComponents) {
+function parse (schema, existingComponents, isSchemaOverride) {
 	// inspect(schema);
 
 	if (!schema) throw new Error('No schema was passed.');
@@ -315,6 +315,12 @@ function parse (schema, existingComponents) {
 	if (!joi.isSchema(schema)) throw new TypeError('Passed schema does not appear to be a joi schema.');
 
 	const flattenMeta = Object.assign.apply(null, [ {} ].concat(schema.$_terms.metas));
+
+	const schemaOverride = flattenMeta.schemaOverride;
+	if (schemaOverride) {
+		if (isSchemaOverride) throw new Error('Cannot override the schema for one which is being used in another override (no nested schema overrides).');
+		return parse(schemaOverride, existingComponents, true);
+	}
 
 	const override = flattenMeta.swagger;
 	if (override && flattenMeta.swaggerOverride) {

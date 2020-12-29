@@ -840,6 +840,22 @@ suite('swagger converts', (s) => {
 		},
 	);
 
+	// custom swagger schemas with schemaOverride
+	simpleTest(
+		'using meta schemaOverride',
+		joi.alternatives().meta({ schemaOverride: joi.number() }),
+		{
+			type: 'number',
+			format: 'float',
+		},
+	);
+
+	testError(
+		'nested schemaOverride fails',
+		joi.object({}).meta({ schemaOverride: joi.object({}).meta({ schemaOverride: joi.object({}) }) }),
+		new Error('Cannot override the schema for one which is being used in another override (no nested schema overrides).'),
+	);
+
 	// custom swagger schemas with swagger and swaggerOverride
 	simpleTest(
 		'using meta swagger',
