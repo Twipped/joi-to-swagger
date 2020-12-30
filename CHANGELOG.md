@@ -1,7 +1,7 @@
 5.2.0 / 2020-12-29
 ==================
 
-  * Add option to override the Joi schema which generates swagger.
+  * Add option to override the Joi schema which generates swagger (thanks @melchii)
 
 5.1.0 / 2020-10-17
 ==================
