@@ -151,6 +151,25 @@ The following may be provided on a joi `.meta()` object to explicitly override d
 
 **swaggerType**: Can be used with the .any() type to add files.
 
+**schemaOverride**: A replacement Joi schema which is used to generate swagger. For example, AWS API Gateway supports a subset of the swagger spec. In order to utilize
+this library with AWS API Gateway's swagger, this option is useful when working with Joi.alternatives().
+
+The example below uses `joi.when`, which would normally use `oneOf`, `anyOf`, or `allOf` keywords. In order to get around that, the meta tag overrides the schema to be similar, but less strict.
+```
+joi.object({
+  type: joi.string().valid('a', 'b'),
+  body: when('type', {
+    is: 'a',
+    then: joi.object({ a: joi.string() }),
+    otherwise: when('type', {
+      is: 'b',
+      then: joi.object({ b: joi.string() }),
+      otherwise: joi.forbidden()
+    })
+  })
+}).meta({ schemaOverride: joi.object({ a: joi.string(), b: joi.string() })})
+```
+
 ## Custom Types (joi.extend)
 
 For supporting custom joi types you can add the needed type information using a the meta property **baseType**.
