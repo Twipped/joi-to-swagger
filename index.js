@@ -90,7 +90,7 @@ function parseValidsAndInvalids (schema, filterFunc) {
 	const swagger = {};
 	if (schema._valids) {
 		const valids = schema._valids.values().filter(filterFunc);
-		if (get(schema, '_flags.only') && valids.length) {
+		if (valids.length) {
 			swagger.enum = valids;
 		}
 	}
