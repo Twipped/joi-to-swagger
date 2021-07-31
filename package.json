@@ -34,7 +34,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "joi": "^17.2.0",
     "@joi/date": "^2.1.0",
-    "tap": "^14.7.3",
+    "tap": "^15.0.9",
     "tapsuite": "^2.0.1"
   },
   "peerDependencies": {
