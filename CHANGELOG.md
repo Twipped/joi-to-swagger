@@ -1,4 +1,4 @@
-6.0.0 / 2021-07-30
+6.0.0 + 6.0.1 / 2021-07-30
 =================
 
   BREAKING CHANGE: override will now also be applied if className is used
