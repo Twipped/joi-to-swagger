@@ -923,10 +923,42 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'using meta swagger and className',
+		joi.date().default(Date.now).meta({ swagger: { customProperty: 'test' }, className: 'myDate' }),
+		{
+			$ref: '#/components/schemas/myDate',
+		},
+		{
+			schemas: {
+				myDate: {
+					type: 'string',
+					format: 'date-time',
+					customProperty: 'test',
+				},
+			},
+		},
+	);
+
+	simpleTest(
 		'using meta swagger and swaggerOverride',
 		joi.date().default(Date.now).meta({ swagger: { customProperty: 'test' }, swaggerOverride: true }),
 		{
 			customProperty: 'test',
+		},
+	);
+
+	simpleTest(
+		'using meta swagger and swaggerOverride and className',
+		joi.date().default(Date.now).meta({ swagger: { customProperty: 'test' }, swaggerOverride: true, className: 'myDate' }),
+		{
+			$ref: '#/components/schemas/myDate',
+		},
+		{
+			schemas: {
+				myDate: {
+					customProperty: 'test',
+				},
+			},
 		},
 	);
 

@@ -1,6 +1,9 @@
-Next / YYYY-MM-DD
+6.0.0 / 2021-07-30
 =================
 
+  BREAKING CHANGE: override will now also be applied if className is used
+  BREAKING CHANGE: swaggerOverride will not ignore className anymore
+  * result object will always contain components object now
   * Add support for @joi/date usage with format YYYY-MM-DD (thanks @vikaskanani)
   * update dependencies
 
