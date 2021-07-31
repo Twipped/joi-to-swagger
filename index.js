@@ -328,18 +328,27 @@ function parse (schema, existingComponents, isSchemaOverride) {
 		return parse(schemaOverride, existingComponents, true);
 	}
 
-	const override = flattenMeta.swagger;
-	if (override && flattenMeta.swaggerOverride) {
-		return { swagger: override, components: {} };
-	}
-
+	const components = {};
 	const metaDefName = flattenMeta.className;
 	const metaDefType = flattenMeta.classTarget || 'schemas';
+	const getReturnValue = (swagger) => {
+		if (metaDefName) {
+			set(components, [ metaDefType, metaDefName ], swagger);
+			return { swagger: refDef(metaDefType, metaDefName), components };
+		}
+
+		return { swagger, components };
+	};
+
+	const override = flattenMeta.swagger;
+	if (override && flattenMeta.swaggerOverride) {
+		return getReturnValue(override);
+	}
 
 	// if the schema has a definition class name, and that
 	// definition is already defined, just use that definition
 	if (metaDefName && get(existingComponents, [ metaDefType, metaDefName ])) {
-		return { swagger: refDef(metaDefType, metaDefName) };
+		return { swagger: refDef(metaDefType, metaDefName), components };
 	}
 
 	if (get(schema, '_flags.presence') === 'forbidden') {
@@ -352,8 +361,7 @@ function parse (schema, existingComponents, isSchemaOverride) {
 		throw new TypeError(`${type} is not a recognized Joi type.`);
 	}
 
-	const components = {};
-	const swagger =  parseAsType[type](schema, existingComponents, components);
+	const swagger = parseAsType[type](schema, existingComponents, components);
 	if (get(schema, '$_terms.whens')) {
 		Object.assign(swagger, parseWhens(schema, existingComponents, components));
 	}
@@ -387,16 +395,11 @@ function parse (schema, existingComponents, isSchemaOverride) {
 		swagger.default = defaultValue;
 	}
 
-	if (metaDefName) {
-		set(components, [ metaDefType, metaDefName ], swagger);
-		return { swagger: refDef(metaDefType, metaDefName), components };
-	}
-
 	if (override) {
 		Object.assign(swagger, override);
 	}
 
-	return { swagger, components };
+	return getReturnValue(swagger);
 }
 
 module.exports = exports = parse;
