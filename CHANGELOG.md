@@ -1,3 +1,8 @@
+Next / YYYY-MM-DD
+=================
+
+  * Add support for @joi/date usage with format YYYY-MM-DD (thanks @vikaskanani)
+
 5.2.0 / 2020-12-29
 ==================
 
