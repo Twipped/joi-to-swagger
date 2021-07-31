@@ -1,11 +1,12 @@
 {
   "name": "joi-to-swagger",
   "version": "5.2.0",
-  "description": "",
+  "description": "Conversion library for transforming joi schema objects into swagger / OpenApi OAS 3.0 schema definitions.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "test": "tap tests.js",
+    "test:coverage:html": "tap --coverage-report=html tests.js",
     "test:debug": "tap --node-arg=--inspect --no-timeout tests.js",
     "test:travis": "tap --reporter=tap tests.js",
     "lint": "eslint ./"

@@ -319,7 +319,7 @@ suite('swagger converts', (s) => {
 
 	simpleTest(
 		'array with min and max and items of strings and numbers',
-		joi.array().items(joi.string(), joi.number()).min(1).max(5),
+		joi.array().items(joi.string(), joi.number(), joi.object().forbidden()).min(1).max(5),
 		{
 			type: 'array',
 			items: {
@@ -599,6 +599,33 @@ suite('swagger converts', (s) => {
 						{ enum: [ 3 ] },
 						{ enum: [ 4 ] },
 					],
+				},
+			},
+			additionalProperties: false,
+		},
+	);
+
+	simpleTest(
+		'object with alternatives.conditional of a scalar property',
+		{
+			a: joi.alternatives().conditional('b', { is: 5, then: joi.string(), otherwise: joi.number().integer() }),
+			b: joi.number().integer(),
+		},
+		{
+			type: 'object',
+			properties: {
+				a: {
+					anyOf: [
+						{
+							type: 'string',
+						},
+						{
+							type: 'integer',
+						},
+					],
+				},
+				b: {
+					type: 'integer',
 				},
 			},
 			additionalProperties: false,
@@ -945,6 +972,8 @@ suite('swagger converts', (s) => {
 	);
 
 	testError('missing schema', undefined, new Error('No schema was passed.'));
+
+	testError('no joi schema', 5, new TypeError('Passed schema does not appear to be a joi schema.'));
 
 	testError(
 		'invalid baseType',
