@@ -191,7 +191,7 @@ const parseAsType = {
 
 		return swagger;
 	},
-	date: (schema) => { 
+	date: (schema) => {
 		const swagger = { type: 'string', format: 'date-time' };
 		if (get(schema, '_flags.format') === 'YYYY-MM-DD') {
 			swagger.format = 'date';

@@ -33,6 +33,7 @@
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "joi": "^17.2.0",
+    "@joi/date": "^2.1.0",
     "tap": "^14.7.3",
     "tapsuite": "^2.0.1"
   },

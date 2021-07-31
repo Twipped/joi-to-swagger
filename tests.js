@@ -1,6 +1,7 @@
 const suite = require('tapsuite');
 const parser = require('./');
 const joi = require('joi');
+const joiDate = require('@joi/date');
 
 suite('swagger converts', (s) => {
 	let i = 0;
@@ -192,6 +193,15 @@ suite('swagger converts', (s) => {
 		{
 			type: 'string',
 			format: 'date-time',
+		},
+	);
+
+	simpleTest(
+		'using @joi/date with format YYYY-MM-DD',
+		joi.extend(joiDate).date().format('YYYY-MM-DD'),
+		{
+			type: 'string',
+			format: 'date',
 		},
 	);
 
