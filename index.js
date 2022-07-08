@@ -259,6 +259,7 @@ const parseAsType = {
 
 		const requireds = [];
 		const properties = {};
+		let additionalProperties = {};
 
 		const combinedComponents = merge({}, existingComponents || {}, newComponentsByRef || {});
 
@@ -281,6 +282,23 @@ const parseAsType = {
 
 		});
 
+		if(!children.length) {
+			let patterns = get(schema, '$_terms.patterns');
+			if(patterns) {
+				patterns.forEach(pattern => {
+					if(pattern?.rule) {
+						const { swagger, components } = parse(pattern.rule, combinedComponents);
+						if (!swagger) { // swagger is falsy if joi.forbidden()
+							return;
+						}
+						additionalProperties = swagger;
+					}
+				})
+				
+
+			}
+		}
+
 		const swagger = {
 			type: 'object',
 			properties,
@@ -291,6 +309,10 @@ const parseAsType = {
 
 		if (get(schema, '_flags.unknown') !== true) {
 			swagger.additionalProperties = false;
+		}
+
+		if(Object.keys(additionalProperties).length !== 0){
+			swagger.additionalProperties = additionalProperties;
 		}
 
 		return swagger;
