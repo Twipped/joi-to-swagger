@@ -1,6 +1,7 @@
 6.1.0 / 2022-07-09
 ==================
   * add support for object.pattern() (thanks @JKEnv)
+  * update dev dependencies
 
 6.0.0 + 6.0.1 / 2021-07-30
 ==========================
