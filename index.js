@@ -386,8 +386,6 @@ function parse (schema, existingComponents, isSchemaOverride) {
 		Object.assign(swagger, parseWhens(schema, existingComponents, components));
 	}
 
-	if (!swagger) return { swagger, components };
-
 	if (schema._valids && schema._valids.has(null)) {
 		swagger.nullable = true;
 	}

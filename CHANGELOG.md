@@ -2,6 +2,7 @@
 ==================
   * add support for object.pattern() (thanks @JKEnv)
   * update dev dependencies
+  * add GitHub action for running tests
 
 6.0.0 + 6.0.1 / 2021-07-30
 ==========================

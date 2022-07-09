@@ -4,16 +4,16 @@ const joi = require('joi');
 const joiDate = require('@joi/date');
 
 suite('swagger converts', (s) => {
-	let i = 0;
-	function simpleTest (...args) {
-		let input, output, components, only, description;
-		i++;
-		if (typeof args[0] === 'string') {
-			[ description, input, output, components, only ] = args;
-		} else {
-			[ input, output, components, only ] = args;
-			description = 'Set ' + i;
-		}
+	/**
+	 * Test method
+	 *
+	 * @param {string} description Description of the test case
+	 * @param {object} input Joi schema to test against
+	 * @param {object} output expected generated schema
+	 * @param {object} [components] expected generated components
+	 * @param {boolean} [only] set to true to only run this test
+	 */
+	function simpleTest (description, input, output, components, only) {
 		s[only ? 'only' : 'test'](description, (t) => {
 			const result = parser(input);
 			t.deepEqual(result.swagger, output, `${description}: swagger matches`);
@@ -22,15 +22,15 @@ suite('swagger converts', (s) => {
 		});
 	}
 
-	function testError (...args) {
-		let input, expectedError, only, description;
-		i++;
-		if (typeof args[0] === 'string') {
-			[ description, input, expectedError, only ] = args;
-		} else {
-			[ input, expectedError, only ] = args;
-			description = 'Set ' + i;
-		}
+	/**
+	 * Test error method
+	 *
+	 * @param {string} description Description of the test case
+	 * @param {object} input Joi schema to test against
+	 * @param {Error} expectedError expected error
+	 * @param {boolean} [only] set to true to only run this test
+	 */
+	function testError (description, input, expectedError, only) {
 		s[only ? 'only' : 'test'](description, (t) => {
 			t.throws(() => parser(input), expectedError, `${description}: expected error was thrown`);
 			t.end();
@@ -233,6 +233,16 @@ suite('swagger converts', (s) => {
 			type: 'string',
 			format: 'uuid',
 		},
+	);
+
+	simpleTest(
+		'string with uuid and other pattern set already',
+		joi.string().alphanum().uuid(),
+		{
+			type: 'string',
+			format: 'uuid',
+		},
+		{},
 	);
 
 	simpleTest(
