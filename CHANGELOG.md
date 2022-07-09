@@ -1,5 +1,9 @@
+6.1.0 / 2022-07-09
+==================
+  * add support for object.pattern() (thanks @JKEnv)
+
 6.0.0 + 6.0.1 / 2021-07-30
-=================
+==========================
 
   BREAKING CHANGE: override will now also be applied if className is used
   BREAKING CHANGE: swaggerOverride will not ignore className anymore

@@ -339,6 +339,107 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with pattern for keys and string as value',
+		joi.object().pattern(/^/, joi.string()),
+		{
+			type: 'object',
+			properties: {},
+			additionalProperties: {
+				type: 'string',
+			},
+		},
+	);
+
+	simpleTest(
+		'object with pattern for keys and forbidden value',
+		joi.object().pattern(/^/, joi.string().forbidden()),
+		{
+			type: 'object',
+			properties: {},
+			additionalProperties: false,
+		},
+	);
+
+	simpleTest(
+		'object with pattern for keys and object as value',
+		joi.object().pattern(/^/, joi.object({ name: joi.string(), date: joi.date() })),
+		{
+			type: 'object',
+			properties: {
+			},
+			additionalProperties: {
+				type: 'object',
+				properties: {
+					name: {
+						type: 'string',
+					},
+					date: {
+						type: 'string',
+						format: 'date-time',
+					},
+				},
+				additionalProperties: false,
+			},
+		},
+	);
+
+	simpleTest(
+		'object with pattern for keys and array as value',
+		joi.object().pattern(/^/, joi.array().items(joi.object({ name: joi.string(), date: joi.date() }))),
+		{
+			type: 'object',
+			properties: {
+			},
+			additionalProperties: {
+				type: 'array',
+				items: {
+					type: 'object',
+					properties: {
+						name: {
+							type: 'string',
+						},
+						date: {
+							type: 'string',
+							format: 'date-time',
+						},
+					},
+					additionalProperties: false,
+				},
+			},
+		},
+	);
+
+	simpleTest(
+		'object with pattern for keys and alternative as value',
+		joi.object().pattern(/^/, joi.alternatives(joi.object({ name: joi.string(), date: joi.date() }), joi.string())),
+		{
+			type: 'object',
+			properties: {
+			},
+			additionalProperties: {
+				anyOf: [
+					{
+						type: 'object',
+						properties: {
+							name: {
+								type: 'string',
+							},
+							date: {
+								type: 'string',
+								format: 'date-time',
+							},
+						},
+						additionalProperties: false,
+					},
+					{
+						type: 'string',
+					},
+				],
+			},
+		},
+	);
+
+	simpleTest(
 		'alternatives of string or number',
 		joi.alternatives(joi.string(), joi.number()),
 		{

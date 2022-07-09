@@ -73,6 +73,7 @@ J2S returns a result object containing `swagger` and `components` properties. `s
 - `joi.object()`
   - `.unknown(false)` -> `additionalProperties: false`
   - `.required()` on object members produces a `"required": []` array
+  - `.pattern(pattern, JoiSchema)` -> `additionalProperties: [Schema]`
 
 - `joi.array().items()` - in case of multiple provided schemas using `items()` method, the "oneOf" (OAS3) keyword is used
   - `.min(4)` -> `"minItems": 4`
