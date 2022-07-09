@@ -282,20 +282,18 @@ const parseAsType = {
 
 		});
 
-		if(!children.length) {
-			let patterns = get(schema, '$_terms.patterns');
-			if(patterns) {
-				patterns.forEach(pattern => {
-					if(pattern?.rule) {
-						const { swagger, components } = parse(pattern.rule, combinedComponents);
+		if (!children.length) {
+			const keyPatterns = get(schema, '$_terms.patterns');
+			if (keyPatterns) {
+				keyPatterns.forEach((pattern) => {
+					if (pattern.rule) {
+						const { swagger } = parse(pattern.rule, combinedComponents);
 						if (!swagger) { // swagger is falsy if joi.forbidden()
 							return;
 						}
 						additionalProperties = swagger;
 					}
-				})
-				
-
+				});
 			}
 		}
 
@@ -311,7 +309,7 @@ const parseAsType = {
 			swagger.additionalProperties = false;
 		}
 
-		if(Object.keys(additionalProperties).length !== 0){
+		if (Object.keys(additionalProperties).length !== 0) {
 			swagger.additionalProperties = additionalProperties;
 		}
 

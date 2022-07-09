@@ -351,6 +351,16 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'object with pattern for keys and forbidden value',
+		joi.object().pattern(/^/, joi.string().forbidden()),
+		{
+			type: 'object',
+			properties: {},
+			additionalProperties: false,
+		},
+	);
+
+	simpleTest(
 		'object with pattern for keys and object as value',
 		joi.object().pattern(/^/, joi.object({ name: joi.string(), date: joi.date() })),
 		{
