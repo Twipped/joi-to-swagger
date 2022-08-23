@@ -16,8 +16,8 @@ suite('swagger converts', (s) => {
 	function simpleTest (description, input, output, components, only) {
 		s[only ? 'only' : 'test'](description, (t) => {
 			const result = parser(input);
-			t.deepEqual(result.swagger, output, `${description}: swagger matches`);
-			if (components) t.deepEqual(result.components, components, `${description}: components match`);
+			t.same(result.swagger, output, `${description}: swagger matches`);
+			if (components) t.same(result.components, components, `${description}: components match`);
 			t.end();
 		});
 	}
@@ -445,6 +445,32 @@ suite('swagger converts', (s) => {
 						type: 'string',
 					},
 				],
+			},
+		},
+	);
+
+	simpleTest(
+		'object with pattern for keys and reference as value',
+		joi.object().pattern(/^/, joi.object({ name: joi.string() }).meta({ className: 'innerObject' })),
+		{
+			type: 'object',
+			properties: {
+			},
+			additionalProperties: {
+				$ref: '#/components/schemas/innerObject',
+			},
+		},
+		{
+			schemas: {
+				innerObject: {
+					type: 'object',
+					properties: {
+						name: {
+							type: 'string',
+						},
+					},
+					additionalProperties: false,
+				},
 			},
 		},
 	);
