@@ -287,10 +287,14 @@ const parseAsType = {
 			if (keyPatterns) {
 				keyPatterns.forEach((pattern) => {
 					if (pattern.rule) {
-						const { swagger } = parse(pattern.rule, combinedComponents);
+						const { swagger, components } = parse(pattern.rule, combinedComponents);
 						if (!swagger) { // swagger is falsy if joi.forbidden()
 							return;
 						}
+
+						merge(newComponentsByRef, components || {});
+						merge(combinedComponents, components || {});
+
 						additionalProperties = swagger;
 					}
 				});

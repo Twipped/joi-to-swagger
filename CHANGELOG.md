@@ -1,3 +1,7 @@
+6.1.1 / 2022-08-23
+==================
+  * allow references when using object.pattern()
+
 6.1.0 / 2022-07-09
 ==================
   * add support for object.pattern() (thanks @JKEnv)
