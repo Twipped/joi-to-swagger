@@ -105,6 +105,12 @@ function parseValidsAndInvalids (schema, filterFunc) {
 	return swagger;
 }
 
+function getRefValue (ref, schema, fallback) {
+	const refValues = meta(schema, 'refValues') || {};
+	const refKey = ref.toString().replace(/^ref:/, '');
+	return refValues[refKey] || fallback;
+}
+
 const parseAsType = {
 	number: (schema) => {
 		const swagger = {};
@@ -131,12 +137,12 @@ const parseAsType = {
 
 		const min = find(schema._rules, { name: 'min' });
 		if (min) {
-			swagger.minimum = min.args.limit;
+			swagger.minimum = joi.isRef(min.args.limit) ? getRefValue(min.args.limit, schema, 0) : min.args.limit;
 		}
 
 		const max = find(schema._rules, { name: 'max' });
 		if (max) {
-			swagger.maximum = max.args.limit;
+			swagger.maximum = joi.isRef(max.args.limit) ? getRefValue(max.args.limit, schema, 0) : max.args.limit;
 		}
 
 		Object.assign(swagger, parseValidsAndInvalids(schema, (s) => isNumber(s)));

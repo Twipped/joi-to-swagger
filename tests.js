@@ -38,6 +38,59 @@ suite('swagger converts', (s) => {
 	}
 
 	simpleTest(
+		'integer min max with references',
+		{
+			durationFrom: joi.number().integer().min(0).max(999),
+			durationTo: joi.number().integer().min(joi.ref('durationFrom')).max(999),
+		},
+		{
+			type: 'object',
+			properties: {
+				durationFrom: {
+					type: 'integer',
+					minimum: 0,
+					maximum: 999,
+				},
+				durationTo: {
+					type: 'integer',
+					minimum: 0,
+					maximum: 999,
+				},
+			},
+			additionalProperties: false,
+		},
+	);
+
+	simpleTest(
+		'integer min max with references and metadata',
+		{
+			durationFrom: joi.number().integer().min(0).max(10),
+			durationTo: joi.number().integer().min(joi.ref('durationFrom')).max(joi.ref('max'))
+				.meta({ refValues: { durationFrom: 5, max: 10 } }),
+			max: joi.number().integer(),
+		},
+		{
+			type: 'object',
+			properties: {
+				durationFrom: {
+					type: 'integer',
+					minimum: 0,
+					maximum: 10,
+				},
+				durationTo: {
+					type: 'integer',
+					minimum: 5,
+					maximum: 10,
+				},
+				max: {
+					type: 'integer',
+				},
+			},
+			additionalProperties: false,
+		},
+	);
+
+	simpleTest(
 		'integer with min and max',
 		joi.number().integer().min(1).max(10),
 		{

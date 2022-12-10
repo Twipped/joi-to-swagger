@@ -1,3 +1,7 @@
+6.1.2 / 2022-12-10
+==================
+  * support usage of joi.ref() in min/max() with optionally setting .meta({ refValues: {...} })
+
 6.1.1 / 2022-08-23
 ==================
   * allow references when using object.pattern()
