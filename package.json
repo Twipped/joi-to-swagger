@@ -1,6 +1,6 @@
 {
   "name": "joi-to-swagger",
-  "version": "6.1.1",
+  "version": "6.2.0",
   "description": "Conversion library for transforming joi schema objects into swagger / OpenApi OAS 3.0 schema definitions.",
   "main": "index.js",
   "types": "index.d.ts",

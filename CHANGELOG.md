@@ -1,4 +1,4 @@
-6.1.2 / 2022-12-10
+6.2.0 / 2022-12-10
 ==================
   * support usage of joi.ref() in min/max() with optionally setting .meta({ refValues: {...} })
 
