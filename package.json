@@ -32,10 +32,10 @@
     "eslint": "^7.32.0",
     "eslint-config-twipped": "~3.4.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "joi": "^17.6.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "joi": "^17.7.0",
     "@joi/date": "^2.1.0",
-    "tap": "^16.3.0",
+    "tap": "^16.3.2",
     "tapsuite": "^2.0.1"
   },
   "peerDependencies": {
