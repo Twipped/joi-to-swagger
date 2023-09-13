@@ -299,6 +299,18 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with uri rule',
+		joi.string().uri({
+			scheme: [ /https?/, /ftp/ ],
+		}),
+		{
+			type: 'string',
+			format: 'uri',
+			pattern: '^(https?|ftp):\\/\\/.+',
+		},
+	);
+
+	simpleTest(
 		'boolean',
 		joi.boolean(),
 		{
