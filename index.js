@@ -176,6 +176,14 @@ const parseAsType = {
 			if (swagger.pattern) delete swagger.pattern;
 		}
 
+		if (find(schema._rules, { name: 'uri' })) {
+			swagger.format = 'uri';
+			const scheme = find(schema._rules, { name: 'uri' }).scheme;
+			if (scheme) {
+				swagger.pattern = `^(${( Array.isArray(scheme) ? scheme : [ scheme ]).join('|')}):\\/\\/.+`;
+			}
+		}
+
 		const pattern = find(schema._rules, { name: 'pattern' });
 		if (pattern) {
 			swagger.pattern = pattern.args.regex.toString().slice(1, -1);
