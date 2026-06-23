@@ -147,6 +147,15 @@ suite('swagger converts', (s) => {
 	);
 
 	simpleTest(
+		'string with regex flag',
+		joi.string().regex(/^A$/u),
+		{
+			type: 'string',
+			pattern: '^A$',
+		},
+	);
+
+	simpleTest(
 		'string with min and max',
 		joi.string().min(4).max(9),
 		{
