@@ -178,7 +178,7 @@ const parseAsType = {
 
 		const pattern = find(schema._rules, { name: 'pattern' });
 		if (pattern) {
-			swagger.pattern = pattern.args.regex.toString().slice(1, -1);
+			swagger.pattern = pattern.args.regex.source;
 		}
 
 		Object.assign(swagger, getMinMax(schema));
